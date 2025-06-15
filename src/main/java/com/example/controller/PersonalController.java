@@ -52,7 +52,8 @@ public class PersonalController {
             List<Post> userPosts = postService.getPostsByUser(user);
             long postCount = postService.getPostCountByUser(user);
             
-            model.addAttribute("user", user);
+            model.addAttribute("currentUser", user);
+            model.addAttribute("user", user); // For navbar
             model.addAttribute("username", user.getUsername()); // For navbar
             model.addAttribute("posts", userPosts);
             model.addAttribute("postCount", postCount);
@@ -124,7 +125,7 @@ public class PersonalController {
         
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            postService.createPost(post.getContent(), user);
+            postService.createPost(post.getTitle(), post.getContent(), user);
             redirectAttributes.addFlashAttribute("postSuccess", "Post created successfully!");
         }
         

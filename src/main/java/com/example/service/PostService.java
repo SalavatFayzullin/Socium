@@ -23,6 +23,11 @@ public class PostService {
         return postRepository.save(post);
     }
 
+    public Post createPost(String title, String content, User author) {
+        Post post = new Post(title, content, author);
+        return postRepository.save(post);
+    }
+
     public List<Post> getPostsByUser(User author) {
         return postRepository.findByAuthorOrderByCreatedAtDesc(author);
     }

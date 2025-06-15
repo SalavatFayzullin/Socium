@@ -1,296 +1,562 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown Guide - Socium</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>Markdown Guide - Spring Auth App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
-        .guide-container {
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            margin-top: 2rem;
-            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        
-        .navbar-custom {
-            background: rgba(255, 255, 255, 0.95) !important;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 30px;
         }
-        
-        .example-box {
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .guide-header {
+            text-align: center;
+            padding: 40px 0;
+            color: white;
+        }
+        .guide-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+        .guide-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .example-section {
+            background: rgba(248, 249, 250, 0.7);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .markdown-input {
             background: #f8f9fa;
-            border-left: 4px solid #667eea;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 0 8px 8px 0;
-        }
-        
-        .result-box {
-            background: #fff;
-            border: 1px solid #dee2e6;
-            padding: 1rem;
-            margin: 1rem 0;
+            border: 2px dashed #e9ecef;
             border-radius: 8px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #495057;
+            margin-bottom: 10px;
+        }
+        .markdown-output {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 60px;
+        }
+        .syntax-card {
+            border-left: 4px solid #28a745;
+            transition: all 0.3s;
+        }
+        .syntax-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 50px;
+            padding: 10px 20px;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            text-decoration: none;
         }
         
-        .syntax-highlight {
-            background: #f8f9fa;
+        /* Markdown rendered content styling */
+        .markdown-output h1, .markdown-output h2, .markdown-output h3, 
+        .markdown-output h4, .markdown-output h5, .markdown-output h6 {
+            color: #333;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .markdown-output h1 { font-size: 1.5rem; border-bottom: 2px solid #e9ecef; padding-bottom: 0.3rem; }
+        .markdown-output h2 { font-size: 1.3rem; border-bottom: 1px solid #e9ecef; padding-bottom: 0.3rem; }
+        .markdown-output h3 { font-size: 1.1rem; }
+        .markdown-output p {
+            margin-bottom: 1rem;
+        }
+        .markdown-output code {
+            background: #f1f3f4;
             padding: 2px 6px;
             border-radius: 4px;
             font-family: 'Courier New', monospace;
+            font-size: 0.9em;
             color: #e83e8c;
         }
-        .navbar-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid rgba(102, 126, 234, 0.3);
+        .markdown-output pre {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid #e9ecef;
+        }
+        .markdown-output pre code {
+            background: none;
+            padding: 0;
+            color: #333;
+        }
+        .markdown-output blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: #6c757d;
+            font-style: italic;
+        }
+        .markdown-output a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .markdown-output a:hover {
+            text-decoration: underline;
+        }
+        .markdown-output ul, .markdown-output ol {
+            padding-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        .markdown-output table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        .markdown-output th, .markdown-output td {
+            border: 1px solid #dee2e6;
+            padding: 0.5rem;
+            text-align: left;
+        }
+        .markdown-output th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        .markdown-output hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            margin: 2rem 0;
+        }
+        .markdown-output img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+    <!-- Use common header -->
+    <div th:replace="~{layout :: header}"></div>
+
+    <!-- Guide Header -->
+    <div class="guide-header">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="/dashboard">
-                <i class="fas fa-shield-alt me-2"></i>Spring Auth App
-            </a>
-            <div class="navbar-nav ms-auto">
-                <span class="navbar-text me-3">
-                    <img th:src="${user.avatarUrl}" th:alt="${user.username} + ' avatar'" 
-                         class="navbar-avatar me-2" onerror="this.src='/images/default-avatar.png'">
-                    Welcome, <span th:text="${username}" class="fw-bold"></span>!
-                </span>
-                <a class="nav-link" href="/personal/feed">
-                    <i class="fas fa-rss me-1"></i>Feed
-                </a>
-                <a class="nav-link" href="/personal">
-                    <i class="fas fa-user me-1"></i>My Profile
-                </a>
-                <form class="d-inline" th:action="@{/logout}" method="post">
-                    <button type="submit" class="btn btn-danger btn-sm">
-                        <i class="fas fa-sign-out-alt me-1"></i>Logout
-                    </button>
-                </form>
+            <h1 class="guide-title">
+                <i class="fab fa-markdown me-3"></i>
+                Markdown Guide
+            </h1>
+            <p class="guide-subtitle">
+                Learn how to format your posts and comments with Markdown
+            </p>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <!-- Back Button -->
+        <a href="/personal" class="back-btn">
+            <i class="fas fa-arrow-left me-2"></i>Back to Profile
+        </a>
+
+        <!-- Table of Contents -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-list me-2"></i>Table of Contents</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><a href="#headers" class="text-decoration-none"><i class="fas fa-heading me-2"></i>Headers</a></li>
+                            <li><a href="#emphasis" class="text-decoration-none"><i class="fas fa-bold me-2"></i>Text Emphasis</a></li>
+                            <li><a href="#lists" class="text-decoration-none"><i class="fas fa-list-ul me-2"></i>Lists</a></li>
+                            <li><a href="#links" class="text-decoration-none"><i class="fas fa-link me-2"></i>Links</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><a href="#code" class="text-decoration-none"><i class="fas fa-code me-2"></i>Code</a></li>
+                            <li><a href="#quotes" class="text-decoration-none"><i class="fas fa-quote-left me-2"></i>Quotes</a></li>
+                            <li><a href="#tables" class="text-decoration-none"><i class="fas fa-table me-2"></i>Tables</a></li>
+                            <li><a href="#advanced" class="text-decoration-none"><i class="fas fa-star me-2"></i>Advanced</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
-    </nav>
 
-    <div class="container">
-        <div class="guide-container">
-            <div class="text-center mb-4">
-                <h1 class="display-4 fw-bold">
-                    <i class="fab fa-markdown me-3"></i>Markdown Guide
-                </h1>
-                <p class="lead">Learn how to format your posts and comments with Markdown</p>
+        <!-- Headers Section -->
+        <div id="headers" class="syntax-card card mb-4">
+            <div class="card-header">
+                <h4><i class="fas fa-heading me-2"></i>Headers</h4>
             </div>
+            <div class="card-body">
+                <p>Create headers using the <code>#</code> symbol. More <code>#</code> symbols create smaller headers.</p>
+                
+                <div class="example-section">
+                    <div class="markdown-input">
+# Header 1
+## Header 2
+### Header 3
+#### Header 4</div>
+                    <div class="markdown-output">
+                        <h1>Header 1</h1>
+                        <h2>Header 2</h2>
+                        <h3>Header 3</h3>
+                        <h4>Header 4</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            <div class="row">
-                <div class="col-md-12">
-                    <!-- Text Formatting -->
-                    <section class="mb-5">
-                        <h2><i class="fas fa-font me-2"></i>Text Formatting</h2>
-                        
-                        <h4>Bold Text</h4>
-                        <div class="example-box">
-                            <code>**This text is bold**</code>
-                        </div>
-                        <div class="result-box">
-                            <strong>This text is bold</strong>
-                        </div>
+        <!-- Text Emphasis Section -->
+        <div id="emphasis" class="syntax-card card mb-4">
+            <div class="card-header">
+                <h4><i class="fas fa-bold me-2"></i>Text Emphasis</h4>
+            </div>
+            <div class="card-body">
+                <p>Make text bold, italic, or strikethrough:</p>
+                
+                <div class="example-section">
+                    <div class="markdown-input">
+**Bold text**
+*Italic text*
+***Bold and italic***
+~~Strikethrough text~~</div>
+                    <div class="markdown-output">
+                        <p><strong>Bold text</strong></p>
+                        <p><em>Italic text</em></p>
+                        <p><strong><em>Bold and italic</em></strong></p>
+                        <p><del>Strikethrough text</del></p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        <h4>Italic Text</h4>
-                        <div class="example-box">
-                            <code>*This text is italic*</code>
+        <!-- Lists Section -->
+        <div id="lists" class="syntax-card card mb-4">
+            <div class="card-header">
+                <h4><i class="fas fa-list-ul me-2"></i>Lists</h4>
+            </div>
+            <div class="card-body">
+                <p>Create ordered and unordered lists:</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Unordered List:</h6>
+                        <div class="example-section">
+                            <div class="markdown-input">
+- Item 1
+- Item 2
+  - Nested item
+  - Another nested item
+- Item 3</div>
+                            <div class="markdown-output">
+                                <ul>
+                                    <li>Item 1</li>
+                                    <li>Item 2
+                                        <ul>
+                                            <li>Nested item</li>
+                                            <li>Another nested item</li>
+                                        </ul>
+                                    </li>
+                                    <li>Item 3</li>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="result-box">
-                            <em>This text is italic</em>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Ordered List:</h6>
+                        <div class="example-section">
+                            <div class="markdown-input">
+1. First item
+2. Second item
+3. Third item
+   1. Nested item
+   2. Another nested item</div>
+                            <div class="markdown-output">
+                                <ol>
+                                    <li>First item</li>
+                                    <li>Second item</li>
+                                    <li>Third item
+                                        <ol>
+                                            <li>Nested item</li>
+                                            <li>Another nested item</li>
+                                        </ol>
+                                    </li>
+                                </ol>
+                            </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        <h4>Strikethrough</h4>
-                        <div class="example-box">
-                            <code>~~This text is crossed out~~</code>
-                        </div>
-                        <div class="result-box">
-                            <del>This text is crossed out</del>
-                        </div>
-                    </section>
+        <!-- Links Section -->
+        <div id="links" class="syntax-card card mb-4">
+            <div class="card-header">
+                <h4><i class="fas fa-link me-2"></i>Links</h4>
+            </div>
+            <div class="card-body">
+                <p>Create clickable links:</p>
+                
+                <div class="example-section">
+                    <div class="markdown-input">
+[Link text](https://example.com)
+[Link with title](https://example.com "This is a title")
 
-                    <!-- Headers -->
-                    <section class="mb-5">
-                        <h2><i class="fas fa-heading me-2"></i>Headers</h2>
-                        
-                        <div class="example-box">
-                            <code># Large Header</code><br>
-                            <code>## Medium Header</code><br>
-                            <code>### Small Header</code>
-                        </div>
-                        <div class="result-box">
-                            <h1 style="font-size: 1.5rem;">Large Header</h1>
-                            <h2 style="font-size: 1.3rem;">Medium Header</h2>
-                            <h3 style="font-size: 1.1rem;">Small Header</h3>
-                        </div>
-                    </section>
+Auto-link: https://example.com</div>
+                    <div class="markdown-output">
+                        <p><a href="https://example.com">Link text</a></p>
+                        <p><a href="https://example.com" title="This is a title">Link with title</a></p>
+                        <p>Auto-link: <a href="https://example.com">https://example.com</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Links -->
-                    <section class="mb-5">
-                        <h2><i class="fas fa-link me-2"></i>Links</h2>
-                        
-                        <div class="example-box">
-                            <code>[Visit Google](https://www.google.com)</code>
+        <!-- Code Section -->
+        <div id="code" class="syntax-card card mb-4">
+            <div class="card-header">
+                <h4><i class="fas fa-code me-2"></i>Code</h4>
+            </div>
+            <div class="card-body">
+                <p>Display code inline or in blocks:</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Inline Code:</h6>
+                        <div class="example-section">
+                            <div class="markdown-input">
+Use `console.log()` to print output.</div>
+                            <div class="markdown-output">
+                                <p>Use <code>console.log()</code> to print output.</p>
+                            </div>
                         </div>
-                        <div class="result-box">
-                            <a href="https://www.google.com" target="_blank">Visit Google</a>
-                        </div>
-                    </section>
-
-                    <!-- Code -->
-                    <section class="mb-5">
-                        <h2><i class="fas fa-code me-2"></i>Code</h2>
-                        
-                        <h4>Inline Code</h4>
-                        <div class="example-box">
-                            <code>`console.log("Hello World")`</code>
-                        </div>
-                        <div class="result-box">
-                            <span class="syntax-highlight">console.log("Hello World")</span>
-                        </div>
-
-                        <h4>Code Block</h4>
-                        <div class="example-box">
-                            <code>```<br>function greet() {<br>&nbsp;&nbsp;return "Hello!";<br>}<br>```</code>
-                        </div>
-                        <div class="result-box">
-                            <pre style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border-left: 4px solid #667eea;"><code>function greet() {
-  return "Hello!";
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Code Block:</h6>
+                        <div class="example-section">
+                            <div class="markdown-input">
+```javascript
+function hello() {
+    console.log("Hello World!");
+}
+```</div>
+                            <div class="markdown-output">
+                                <pre><code class="language-javascript">function hello() {
+    console.log("Hello World!");
 }</code></pre>
+                            </div>
                         </div>
-                    </section>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Lists -->
-                    <section class="mb-5">
-                        <h2><i class="fas fa-list me-2"></i>Lists</h2>
-                        
-                        <h4>Unordered List</h4>
-                        <div class="example-box">
-                            <code>- First item<br>- Second item<br>- Third item</code>
-                        </div>
-                        <div class="result-box">
-                            <ul>
-                                <li>First item</li>
-                                <li>Second item</li>
-                                <li>Third item</li>
-                            </ul>
-                        </div>
-
-                        <h4>Ordered List</h4>
-                        <div class="example-box">
-                            <code>1. First item<br>2. Second item<br>3. Third item</code>
-                        </div>
-                        <div class="result-box">
-                            <ol>
-                                <li>First item</li>
-                                <li>Second item</li>
-                                <li>Third item</li>
-                            </ol>
-                        </div>
-                    </section>
-
-                    <!-- Blockquotes -->
-                    <section class="mb-5">
-                        <h2><i class="fas fa-quote-left me-2"></i>Blockquotes</h2>
-                        
-                        <div class="example-box">
-                            <code>> This is a quote<br>> It can span multiple lines</code>
-                        </div>
-                        <div class="result-box">
-                            <blockquote style="border-left: 4px solid #667eea; padding-left: 1rem; margin: 1rem 0; color: #6c757d; font-style: italic;">
-                                This is a quote<br>
-                                It can span multiple lines
+        <!-- Quotes Section -->
+        <div id="quotes" class="syntax-card card mb-4">
+            <div class="card-header">
+                <h4><i class="fas fa-quote-left me-2"></i>Blockquotes</h4>
+            </div>
+            <div class="card-body">
+                <p>Create blockquotes using the <code>&gt;</code> symbol:</p>
+                
+                <div class="example-section">
+                    <div class="markdown-input">
+> This is a blockquote.
+> It can span multiple lines.
+> 
+> > This is a nested blockquote.</div>
+                    <div class="markdown-output">
+                        <blockquote>
+                            <p>This is a blockquote.<br>
+                            It can span multiple lines.</p>
+                            <blockquote>
+                                <p>This is a nested blockquote.</p>
                             </blockquote>
-                        </div>
-                    </section>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Horizontal Rules -->
-                    <section class="mb-5">
-                        <h2><i class="fas fa-minus me-2"></i>Horizontal Rules</h2>
-                        
-                        <div class="example-box">
-                            <code>---</code>
-                        </div>
-                        <div class="result-box">
-                            <hr style="border: none; height: 2px; background: linear-gradient(45deg, #667eea, #764ba2); margin: 2rem 0;">
-                        </div>
-                    </section>
+        <!-- Tables Section -->
+        <div id="tables" class="syntax-card card mb-4">
+            <div class="card-header">
+                <h4><i class="fas fa-table me-2"></i>Tables</h4>
+            </div>
+            <div class="card-body">
+                <p>Create tables using pipes <code>|</code> and dashes <code>-</code>:</p>
+                
+                <div class="example-section">
+                    <div class="markdown-input">
+| Header 1 | Header 2 | Header 3 |
+|----------|----------|----------|
+| Cell 1   | Cell 2   | Cell 3   |
+| Cell 4   | Cell 5   | Cell 6   |</div>
+                    <div class="markdown-output">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Header 1</th>
+                                    <th>Header 2</th>
+                                    <th>Header 3</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Cell 1</td>
+                                    <td>Cell 2</td>
+                                    <td>Cell 3</td>
+                                </tr>
+                                <tr>
+                                    <td>Cell 4</td>
+                                    <td>Cell 5</td>
+                                    <td>Cell 6</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Tables -->
-                    <section class="mb-5">
-                        <h2><i class="fas fa-table me-2"></i>Tables</h2>
-                        
-                        <div class="example-box">
-                            <code>| Name | Age | City |<br>|------|-----|------|<br>| John | 25  | NYC  |<br>| Jane | 30  | LA   |</code>
-                        </div>
-                        <div class="result-box">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Age</th>
-                                        <th>City</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>John</td>
-                                        <td>25</td>
-                                        <td>NYC</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Jane</td>
-                                        <td>30</td>
-                                        <td>LA</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
+        <!-- Advanced Section -->
+        <div id="advanced" class="syntax-card card mb-4">
+            <div class="card-header">
+                <h4><i class="fas fa-star me-2"></i>Advanced Formatting</h4>
+            </div>
+            <div class="card-body">
+                <p>Additional formatting options:</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Horizontal Rule:</h6>
+                        <div class="example-section">
+                            <div class="markdown-input">
+Text above line
 
-                    <!-- Tips -->
-                    <section class="mb-5">
-                        <h2><i class="fas fa-lightbulb me-2"></i>Tips</h2>
-                        
-                        <div class="alert alert-info">
-                            <h5><i class="fas fa-info-circle me-2"></i>Pro Tips</h5>
-                            <ul class="mb-0">
-                                <li>Use the preview feature when creating posts to see how your Markdown will look</li>
-                                <li>Combine different formatting options for rich content</li>
-                                <li>Keep your formatting simple and readable</li>
-                                <li>Use headers to organize longer posts</li>
-                                <li>Code blocks are great for sharing snippets</li>
-                            </ul>
-                        </div>
-                    </section>
+---
 
-                    <!-- Back Button -->
-                    <div class="text-center">
-                        <a href="/personal" class="btn btn-primary btn-lg">
-                            <i class="fas fa-arrow-left me-2"></i>Back to Profile
+Text below line</div>
+                            <div class="markdown-output">
+                                <p>Text above line</p>
+                                <hr>
+                                <p>Text below line</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Line Breaks:</h6>
+                        <div class="example-section">
+                            <div class="markdown-input">
+Line 1  
+Line 2 (add 2 spaces after Line 1)
+
+Paragraph break
+(empty line above)</div>
+                            <div class="markdown-output">
+                                <p>Line 1<br>
+                                Line 2 (add 2 spaces after Line 1)</p>
+                                <p>Paragraph break<br>
+                                (empty line above)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4><i class="fas fa-lightbulb me-2"></i>Pro Tips</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-eye fa-2x text-primary mb-2"></i>
+                            <h6>Preview</h6>
+                            <p class="text-muted small">Most forms have a preview feature to see how your markdown will look.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-keyboard fa-2x text-success mb-2"></i>
+                            <h6>Practice</h6>
+                            <p class="text-muted small">The best way to learn is by practicing. Try different combinations!</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-mobile-alt fa-2x text-info mb-2"></i>
+                            <h6>Mobile Friendly</h6>
+                            <p class="text-muted small">All markdown formatting works great on mobile devices too.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-edit fa-2x text-primary mb-3"></i>
+                        <h5>Try It Out</h5>
+                        <p class="text-muted">Practice your markdown skills by creating a new post</p>
+                        <a href="/personal" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Create Post
                         </a>
-                        <a href="/personal/feed" class="btn btn-outline-primary btn-lg ms-2">
-                            <i class="fas fa-rss me-2"></i>Go to Feed
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-users fa-2x text-success mb-3"></i>
+                        <h5>Community Feed</h5>
+                        <p class="text-muted">See how others use markdown in their posts</p>
+                        <a href="/personal/feed" class="btn btn-success">
+                            <i class="fas fa-rss me-2"></i>View Feed
                         </a>
                     </div>
                 </div>
@@ -298,6 +564,54 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Use common scripts -->
+    <div th:replace="~{layout :: scripts}"></div>
+    
+    <script>
+        // Smooth scrolling for table of contents links
+        document.addEventListener('DOMContentLoaded', function() {
+            const tocLinks = document.querySelectorAll('a[href^="#"]');
+            tocLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+
+        // Add copy buttons to code examples
+        document.addEventListener('DOMContentLoaded', function() {
+            const codeBlocks = document.querySelectorAll('.markdown-input');
+            codeBlocks.forEach((block, index) => {
+                // Create copy button
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'btn btn-sm btn-outline-secondary position-absolute';
+                copyBtn.style.cssText = 'top: 5px; right: 5px; padding: 2px 8px; font-size: 0.8rem;';
+                copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+                copyBtn.title = 'Copy to clipboard';
+                
+                // Position parent relatively
+                block.style.position = 'relative';
+                block.appendChild(copyBtn);
+                
+                // Add click handler
+                copyBtn.addEventListener('click', function() {
+                    navigator.clipboard.writeText(block.textContent.trim()).then(() => {
+                        copyBtn.innerHTML = '<i class="fas fa-check text-success"></i>';
+                        setTimeout(() => {
+                            copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+                        }, 2000);
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 </html> 

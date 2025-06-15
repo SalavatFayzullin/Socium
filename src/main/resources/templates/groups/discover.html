@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover Groups - Spring Auth App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .group-card {
+            margin-bottom: 20px;
+            height: 100%;
+        }
+        .search-card {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .form-control {
+            border-radius: 25px;
+            border: 2px solid #e9ecef;
+            padding: 12px 20px;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #764ba2, #667eea);
+        }
+        .btn-outline-primary {
+            border-radius: 25px;
+            padding: 12px 30px;
+        }
+        .group-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 20px;
+        }
+        .group-stats {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <!-- Use common header -->
+    <div th:replace="~{layout :: header}"></div>
+
+    <!-- Use common alerts -->
+    <div th:replace="~{layout :: alerts}"></div>
+
+    <div class="container mt-4">
+        <!-- Search Header -->
+        <div class="search-card">
+            <div class="text-center mb-4">
+                <i class="fas fa-search fa-3x mb-3"></i>
+                <h2>Discover Groups</h2>
+                <p class="mb-0">Find and join public groups that match your interests</p>
+            </div>
+            
+            <form method="GET" action="/groups/discover">
+                <div class="row align-items-end">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <input type="text" class="form-control" name="search" 
+                                   th:value="${search}" placeholder="Search for groups by name or description...">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3 d-grid">
+                            <button type="submit" class="btn btn-light">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="group-stats">
+            <div class="row">
+                <div class="col-md-3 stat-item">
+                    <div class="stat-number" th:text="${totalGroups}">0</div>
+                    <div class="stat-label">Total Groups</div>
+                </div>
+                <div class="col-md-3 stat-item">
+                    <div class="stat-number" th:text="${publicGroups}">0</div>
+                    <div class="stat-label">Public Groups</div>
+                </div>
+                <div class="col-md-3 stat-item">
+                    <div class="stat-number" th:text="${activeGroups}">0</div>
+                    <div class="stat-label">Active Groups</div>
+                </div>
+                <div class="col-md-3 stat-item">
+                    <div class="stat-number" th:text="${myGroups}">0</div>
+                    <div class="stat-label">My Groups</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="card">
+            <div class="group-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-0">
+                            <span th:if="${search}">Search Results</span>
+                            <span th:unless="${search}">All Public Groups</span>
+                        </h4>
+                        <p class="mb-0" th:if="${search}">
+                            Found <span th:text="${groups.totalElements}">0</span> groups matching "<span th:text="${search}">search</span>"
+                        </p>
+                        <p class="mb-0" th:unless="${search}">
+                            <span th:text="${groups.totalElements}">0</span> public groups available
+                        </p>
+                    </div>
+                    <a href="/groups/create" class="btn btn-light">
+                        <i class="fas fa-plus"></i> Create Group
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <!-- No Results -->
+                <div th:if="${groups.content.empty}" class="text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Groups Found</h4>
+                    <p class="text-muted" th:if="${search}">
+                        No groups match your search criteria. Try a different search term.
+                    </p>
+                    <p class="text-muted" th:unless="${search}">
+                        No public groups are available yet. Why not create the first one?
+                    </p>
+                    <div>
+                        <a href="/groups/create" class="btn btn-primary me-2">
+                            <i class="fas fa-plus"></i> Create Group
+                        </a>
+                        <a href="/groups/discover" class="btn btn-outline-primary" th:if="${search}">
+                            <i class="fas fa-list"></i> Show All Groups
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Groups Grid -->
+                <div class="row">
+                    <div class="col-md-6 col-lg-4" th:each="group : ${groups.content}">
+                        <div class="card group-card">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-users text-primary"></i>
+                                    <span th:text="${group.name}">Group Name</span>
+                                    <span class="badge bg-success ms-2">
+                                        <i class="fas fa-globe"></i> Public
+                                    </span>
+                                </h5>
+                                
+                                <p class="card-text text-muted" th:text="${group.description ?: 'No description available'}">
+                                    Group description
+                                </p>
+                                
+                                <div class="mb-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-user-friends"></i> 
+                                        <span th:text="${group.memberCount}">0</span> members
+                                    </small>
+                                    <small class="text-muted ms-3">
+                                        <i class="fas fa-user"></i> 
+                                        Created by <span th:text="${group.creator.username}">Creator</span>
+                                    </small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock"></i> 
+                                        Created <span th:text="${#temporals.format(group.createdAt, 'MMM dd, yyyy')}">Date</span>
+                                    </small>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <!-- Already a member -->
+                                    <div th:if="${group.isMember(currentUser)}">
+                                        <a th:href="@{/groups/{id}(id=${group.id})}" class="btn btn-success">
+                                            <i class="fas fa-comments"></i> Open Chat
+                                        </a>
+                                        <small class="text-success d-block text-center mt-2">
+                                            <i class="fas fa-check"></i> Already a member
+                                        </small>
+                                    </div>
+                                    
+                                    <!-- Not a member -->
+                                    <div th:unless="${group.isMember(currentUser)}">
+                                        <a th:href="@{/groups/{id}/join(id=${group.id})}" class="btn btn-primary">
+                                            <i class="fas fa-sign-in-alt"></i> View & Join
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div th:if="${totalPages > 1}" class="d-flex justify-content-center mt-4">
+                    <nav aria-label="Groups pagination">
+                        <ul class="pagination">
+                            <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/groups/discover(page=${currentPage - 1}, search=${search})}">Previous</a>
+                            </li>
+                            <li class="page-item" 
+                                th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                                th:classappend="${i == currentPage ? 'active' : ''}">
+                                <a class="page-link" th:href="@{/groups/discover(page=${i}, search=${search})}" th:text="${i + 1}">1</a>
+                            </li>
+                            <li class="page-item" th:classappend="${currentPage >= totalPages - 1 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/groups/discover(page=${currentPage + 1}, search=${search})}">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips Card -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-lightbulb text-warning"></i> Tips for Finding Great Groups
+                </h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="mb-0">
+                            <li><strong>Use Keywords:</strong> Search for topics you're interested in</li>
+                            <li><strong>Check Activity:</strong> Look for groups with recent activity</li>
+                            <li><strong>Read Descriptions:</strong> Understand what the group is about</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="mb-0">
+                            <li><strong>Member Count:</strong> Consider the group size that fits you</li>
+                            <li><strong>Be Respectful:</strong> Follow group rules and guidelines</li>
+                            <li><strong>Participate:</strong> Engage in conversations actively</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Use common scripts -->
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html> 

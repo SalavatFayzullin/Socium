@@ -19,10 +19,6 @@
             background: rgba(255, 255, 255, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .navbar {
-            background: rgba(255, 255, 255, 0.95) !important;
-            backdrop-filter: blur(10px);
-        }
         .btn-primary {
             background: linear-gradient(45deg, #667eea, #764ba2);
             border: none;
@@ -83,35 +79,11 @@
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="/">
-                <i class="fas fa-shield-alt me-2"></i>Spring Auth App
-            </a>
-            <div class="navbar-nav ms-auto">
-                <span class="navbar-text me-3">
-                    <img th:src="${user.avatarUrl}" th:alt="${user.username} + ' avatar'" 
-                         class="navbar-avatar me-2" onerror="this.src='/images/default-avatar.png'">
-                    Welcome, <span th:text="${username}" class="fw-bold"></span>!
-                </span>
-                <a class="nav-link" href="/personal/feed">
-                    <i class="fas fa-rss me-1"></i>Feed
-                </a>
-                <a class="nav-link active" href="/chat">
-                    <i class="fas fa-comments me-1"></i>Chat
-                </a>
-                <a class="nav-link" href="/personal">
-                    <i class="fas fa-user me-1"></i>My Profile
-                </a>
-                <form class="d-inline" th:action="@{/logout}" method="post">
-                    <button type="submit" class="btn btn-danger btn-sm">
-                        <i class="fas fa-sign-out-alt me-1"></i>Logout
-                    </button>
-                </form>
-            </div>
-        </div>
-    </nav>
+    <!-- Use common header -->
+    <div th:replace="~{layout :: header}"></div>
+
+    <!-- Use common alerts -->
+    <div th:replace="~{layout :: alerts}"></div>
 
     <div class="container mt-4">
         <!-- Page Header -->
@@ -139,16 +111,6 @@
             </div>
         </div>
 
-        <!-- Success/Error Messages -->
-        <div th:if="${success}" class="alert alert-success" role="alert">
-            <i class="fas fa-check-circle me-2"></i>
-            <span th:text="${success}"></span>
-        </div>
-        <div th:if="${error}" class="alert alert-danger" role="alert">
-            <i class="fas fa-exclamation-circle me-2"></i>
-            <span th:text="${error}"></span>
-        </div>
-
         <!-- Chat List -->
         <div class="card">
             <div class="card-header">
@@ -167,7 +129,7 @@
                         <div class="d-flex align-items-center">
                             <div class="me-3">
                                 <img th:src="${chat.getOtherUser(currentUser).avatarUrl}" 
-                                     th:alt="${chat.getOtherUser(currentUser).username} + ' avatar'" 
+                                     th:alt="|${chat.getOtherUser(currentUser).username} avatar|" 
                                      class="chat-avatar" onerror="this.src='/images/default-avatar.png'">
                             </div>
                             <div class="flex-grow-1">
@@ -199,118 +161,14 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Use common scripts -->
+    <div th:replace="~{layout :: scripts}"></div>
+    
     <script>
-        let isPolling = false;
-        let pollTimeout = null;
-
-        // Update chat list with new data
-        function updateChatList() {
-            fetch('/api/chat/list/updates', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.chats) {
-                    data.chats.forEach(chatUpdate => {
-                        updateChatItem(chatUpdate);
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error updating chat list:', error);
-            });
-        }
-
-        // Update individual chat item
-        function updateChatItem(chatData) {
-            const chatElement = document.querySelector(`[onclick*="chat/${chatData.id}"]`);
-            if (chatElement) {
-                // Update last message
-                const lastMessageElement = chatElement.querySelector('.last-message span');
-                if (lastMessageElement && chatData.lastMessage) {
-                    lastMessageElement.textContent = chatData.lastMessage;
-                }
-
-                // Update time
-                const timeElement = chatElement.querySelector('.chat-time span');
-                if (timeElement && chatData.lastMessageTime) {
-                    const date = new Date(chatData.lastMessageTime);
-                    timeElement.textContent = date.toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric', 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                    });
-                }
-
-                // Update unread count
-                const unreadElement = chatElement.querySelector('.unread-badge span');
-                if (chatData.unreadCount > 0) {
-                    if (unreadElement) {
-                        unreadElement.textContent = chatData.unreadCount;
-                    } else {
-                        // Create unread badge if it doesn't exist
-                        const timeContainer = chatElement.querySelector('.text-end');
-                        if (timeContainer) {
-                            timeContainer.insertAdjacentHTML('beforeend', 
-                                `<div class="unread-badge mt-1"><span>${chatData.unreadCount}</span></div>`);
-                        }
-                    }
-                } else {
-                    // Remove unread badge if count is 0
-                    const unreadBadge = chatElement.querySelector('.unread-badge');
-                    if (unreadBadge) {
-                        unreadBadge.remove();
-                    }
-                }
-            }
-        }
-
-        // Start polling for chat list updates
-        function startChatListPolling() {
-            if (isPolling) return;
-            
-            isPolling = true;
-            
-            function poll() {
-                if (!isPolling) return;
-                
-                updateChatList();
-                pollTimeout = setTimeout(poll, 5000); // Poll every 5 seconds
-            }
-            
-            poll();
-        }
-
-        // Stop polling
-        function stopChatListPolling() {
-            isPolling = false;
-            if (pollTimeout) {
-                clearTimeout(pollTimeout);
-                pollTimeout = null;
-            }
-        }
-
-        // Initialize polling when page loads
-        window.addEventListener('load', function() {
-            startChatListPolling();
-        });
-
-        // Stop polling when page is about to unload
-        window.addEventListener('beforeunload', stopChatListPolling);
-
-        // Handle visibility change
-        document.addEventListener('visibilitychange', function() {
-            if (document.hidden) {
-                stopChatListPolling();
-            } else {
-                startChatListPolling();
-            }
-        });
+        // Auto-refresh chats every 30 seconds
+        setInterval(function() {
+            location.reload();
+        }, 30000);
     </script>
 </body>
 </html> 

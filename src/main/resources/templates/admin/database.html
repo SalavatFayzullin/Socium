@@ -121,32 +121,11 @@
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="/dashboard">
-                <i class="fas fa-shield-alt me-2"></i>Spring Auth App
-            </a>
-            <div class="navbar-nav ms-auto">
-                <span class="navbar-text me-3">
-                    <img th:src="${user.avatarUrl}" th:alt="${user.username} + ' avatar'" 
-                         class="navbar-avatar me-2" onerror="this.src='/images/default-avatar.png'">
-                    Welcome, <span th:text="${username}" class="fw-bold"></span>!
-                </span>
-                <a class="nav-link" href="/personal/feed">
-                    <i class="fas fa-rss me-1"></i>Feed
-                </a>
-                <a class="nav-link" href="/personal">
-                    <i class="fas fa-user me-1"></i>My Profile
-                </a>
-                <form class="d-inline" th:action="@{/logout}" method="post">
-                    <button type="submit" class="btn btn-danger btn-sm">
-                        <i class="fas fa-sign-out-alt me-1"></i>Logout
-                    </button>
-                </form>
-            </div>
-        </div>
-    </nav>
+    <!-- Use common header -->
+    <div th:replace="~{layout :: header}"></div>
+
+    <!-- Use common alerts -->
+    <div th:replace="~{layout :: alerts}"></div>
 
     <div class="container">
         <div class="admin-container">
@@ -155,17 +134,6 @@
                     <i class="fas fa-database me-3"></i>Database Management
                 </h1>
                 <p class="lead">Monitor and manage your Socium database</p>
-            </div>
-
-            <!-- Success/Error Messages -->
-            <div th:if="${success}" class="alert alert-success alert-custom">
-                <i class="fas fa-check-circle me-2"></i>
-                <span th:text="${success}"></span>
-            </div>
-            
-            <div th:if="${error}" class="alert alert-danger alert-custom">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                <span th:text="${error}"></span>
             </div>
 
             <!-- Statistics Cards -->
@@ -199,28 +167,60 @@
             <!-- Database Actions -->
             <div class="row">
                 <div class="col-md-6">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body text-center">
-                            <i class="fas fa-download fa-3x text-success mb-3"></i>
-                            <h5 class="card-title">Create Backup</h5>
-                            <p class="card-text">Create a complete backup of your database including all users, posts, comments, and likes.</p>
-                            <form method="post" th:action="@{/admin/database/backup}">
-                                <button type="submit" class="btn btn-admin btn-backup">
-                                    <i class="fas fa-download me-2"></i>Create Backup
-                                </button>
-                            </form>
+                    <div class="card h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-tools me-2"></i>Database Tools
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="/h2-console" target="_blank" class="btn-admin">
+                                    <i class="fas fa-database me-2"></i>H2 Console
+                                </a>
+                                <form th:action="@{/admin/database/backup}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn-admin btn-backup w-100">
+                                        <i class="fas fa-download me-2"></i>Create Backup
+                                    </button>
+                                </form>
+                                <form th:action="@{/admin/database/cleanup}" method="post" 
+                                      onsubmit="return confirm('This will clean up old temporary data. Continue?')"
+                                      style="display: inline;">
+                                    <button type="submit" class="btn-admin w-100" style="background: linear-gradient(135deg, #ff7b7b 0%, #667eea 100%);">
+                                        <i class="fas fa-broom me-2"></i>Cleanup Database
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
+                
                 <div class="col-md-6">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body text-center">
-                            <i class="fas fa-chart-bar fa-3x text-info mb-3"></i>
-                            <h5 class="card-title">H2 Console</h5>
-                            <p class="card-text">Access the H2 database console for advanced database operations and queries.</p>
-                            <a href="/h2-console" target="_blank" class="btn btn-admin">
-                                <i class="fas fa-external-link-alt me-2"></i>Open Console
-                            </a>
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-chart-line me-2"></i>Quick Stats
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-user-check text-success me-2"></i>Active Users</span>
+                                    <strong class="text-success" th:text="${activeUsers}">0</strong>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-comments text-info me-2"></i>Total Messages</span>
+                                    <strong class="text-info" th:text="${totalMessages}">0</strong>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-users text-warning me-2"></i>Total Groups</span>
+                                    <strong class="text-warning" th:text="${totalGroups}">0</strong>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-clock text-muted me-2"></i>Uptime</span>
+                                    <strong class="text-muted" th:text="${uptime}">0 hours</strong>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -232,37 +232,68 @@
                     <i class="fas fa-info-circle me-2"></i>Database Information
                 </h4>
                 <div class="info-item">
-                    <span><strong>Database Type:</strong></span>
-                    <span>H2 File-based Database</span>
-                </div>
-                <div class="info-item">
-                    <span><strong>Database Files:</strong></span>
-                    <span>./data/socium_db.*</span>
-                </div>
-                <div class="info-item">
-                    <span><strong>Avatar Uploads:</strong></span>
-                    <span>./uploads/avatars/</span>
-                </div>
-                <div class="info-item">
-                    <span><strong>Backup Location:</strong></span>
-                    <span>./backups/</span>
-                </div>
-                <div class="info-item">
-                    <span><strong>Console URL:</strong></span>
-                    <span>jdbc:h2:file:./data/socium_db</span>
+                    <span><strong>Database URL:</strong></span>
+                    <code>jdbc:h2:file:./data/socium_db</code>
                 </div>
                 <div class="info-item">
                     <span><strong>Username:</strong></span>
-                    <span>sa</span>
+                    <code>sa</code>
                 </div>
                 <div class="info-item">
                     <span><strong>Password:</strong></span>
-                    <span>password</span>
+                    <code>password</code>
                 </div>
+                <div class="info-item">
+                    <span><strong>Driver:</strong></span>
+                    <code>H2 Database Engine</code>
+                </div>
+                <div class="info-item">
+                    <span><strong>Storage:</strong></span>
+                    <span class="text-success">File-based (persistent)</span>
+                </div>
+                <div class="info-item">
+                    <span><strong>Last Updated:</strong></span>
+                    <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd HH:mm:ss')}">Now</span>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="text-center mt-4">
+                <a href="/dashboard" class="btn-admin me-2">
+                    <i class="fas fa-tachometer-alt me-2"></i>Back to Dashboard
+                </a>
+                <a href="/personal/feed" class="btn-admin">
+                    <i class="fas fa-rss me-2"></i>Community Feed
+                </a>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Use common scripts -->
+    <div th:replace="~{layout :: scripts}"></div>
+    
+    <script>
+        // Auto-refresh stats every 30 seconds
+        setInterval(function() {
+            // Only refresh if page is visible
+            if (!document.hidden) {
+                location.reload();
+            }
+        }, 30000);
+
+        // Add loading state to backup button
+        document.querySelector('form[action*="backup"]').addEventListener('submit', function() {
+            const button = this.querySelector('button');
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating Backup...';
+            button.disabled = true;
+        });
+
+        // Add loading state to cleanup button
+        document.querySelector('form[action*="cleanup"]').addEventListener('submit', function() {
+            const button = this.querySelector('button');
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Cleaning Up...';
+            button.disabled = true;
+        });
+    </script>
 </body>
 </html> 

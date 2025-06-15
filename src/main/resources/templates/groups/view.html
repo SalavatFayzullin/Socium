@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${group.name} + ' - Group Chat'">Group Chat - Spring Auth App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .chat-container {
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 15px 15px 0 0;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+        .message.own {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+        .message.other {
+            background: #f8f9fa;
+            color: #333;
+            margin-right: auto;
+        }
+        .message.system {
+            background: #e9ecef;
+            color: #6c757d;
+            text-align: center;
+            font-style: italic;
+            max-width: 100%;
+            margin: 10px auto;
+        }
+        .message-header {
+            font-size: 0.85em;
+            margin-bottom: 5px;
+            opacity: 0.8;
+        }
+        .message-content {
+            font-size: 1em;
+            line-height: 1.4;
+        }
+        .message-time {
+            font-size: 0.75em;
+            margin-top: 5px;
+            opacity: 0.7;
+        }
+        .message-input {
+            background: white;
+            border-radius: 0 0 15px 15px;
+            padding: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+        .form-control {
+            border-radius: 25px;
+            border: 2px solid #e9ecef;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+        }
+        .members-sidebar {
+            background: white;
+            border-radius: 15px;
+            height: 70vh;
+            overflow-y: auto;
+        }
+        .member-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f8f9fa;
+            display: flex;
+            align-items: center;
+        }
+        .member-item:last-child {
+            border-bottom: none;
+        }
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .member-info {
+            flex: 1;
+        }
+        .member-name {
+            font-weight: 500;
+            margin-bottom: 0;
+        }
+        .member-role {
+            font-size: 0.8em;
+            color: #6c757d;
+        }
+        .group-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Use common header -->
+    <div th:replace="~{layout :: header}"></div>
+
+    <!-- Use common alerts -->
+    <div th:replace="~{layout :: alerts}"></div>
+
+    <div class="container-fluid mt-4">
+        <!-- Group Header -->
+        <div class="group-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2>
+                        <i class="fas fa-users"></i> <span th:text="${group.name}">Group Name</span>
+                        <span th:if="${group.public}" class="badge bg-success ms-2">
+                            <i class="fas fa-globe"></i> Public
+                        </span>
+                        <span th:if="${!group.public}" class="badge bg-secondary ms-2">
+                            <i class="fas fa-lock"></i> Private
+                        </span>
+                    </h2>
+                    <p class="mb-0" th:text="${group.description}">Group description</p>
+                </div>
+                <div class="text-end">
+                    <div class="mb-2">
+                        <span class="badge bg-light text-dark">
+                            <i class="fas fa-user-friends"></i> <span th:text="${group.memberCount}">0</span> members
+                        </span>
+                    </div>
+                    <div class="btn-group">
+                        <a th:href="@{/groups/{id}/settings(id=${group.id})}" 
+                           th:if="${isAdmin}" class="btn btn-light btn-sm">
+                            <i class="fas fa-cog"></i> Settings
+                        </a>
+                        <form th:action="@{/groups/{id}/leave(id=${group.id})}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-outline-light btn-sm"
+                                    onclick="return confirm('Are you sure you want to leave this group?')">
+                                <i class="fas fa-sign-out-alt"></i> Leave
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Chat Area -->
+            <div class="col-lg-8">
+                <div class="chat-container">
+                    <!-- Messages -->
+                    <div class="messages-container" id="messagesContainer">
+                        <div th:if="${messages.content.empty}" class="text-center py-5">
+                            <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No messages yet</h5>
+                            <p class="text-muted">Be the first to start the conversation!</p>
+                        </div>
+
+                        <div th:each="message : ${messages.content}" 
+                             th:class="'message ' + ${currentUser != null and message.sender.id == currentUser.id ? 'own' : (message.systemMessage ? 'system' : 'other')}">
+                            
+                            <!-- System Message -->
+                            <div th:if="${message.systemMessage}">
+                                <div class="message-content" th:text="${message.content}">System message</div>
+                                <div class="message-time" th:text="${#temporals.format(message.createdAt, 'MMM dd, HH:mm')}">Time</div>
+                            </div>
+
+                            <!-- Regular Message -->
+                            <div th:unless="${message.systemMessage}">
+                                <div class="message-header" th:unless="${currentUser != null and message.sender.id == currentUser.id}">
+                                    <strong th:text="${message.sender.username}">Username</strong>
+                                </div>
+                                <div class="message-content" th:text="${message.content}">Message content</div>
+                                <div class="message-time">
+                                    <span th:text="${#temporals.format(message.createdAt, 'MMM dd, HH:mm')}">Time</span>
+                                    <span th:if="${message.edited}" class="ms-2">
+                                        <i class="fas fa-edit" title="Edited"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Message Input -->
+                    <div class="message-input">
+                        <form th:action="@{/groups/{id}/message(id=${group.id})}" method="post">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="content" 
+                                       placeholder="Type your message..." required maxlength="1000"
+                                       autocomplete="off">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div th:if="${totalPages > 1}" class="mt-3">
+                    <nav aria-label="Messages pagination">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/groups/{id}(id=${group.id}, page=${currentPage - 1})}">Previous</a>
+                            </li>
+                            <li class="page-item" 
+                                th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                                th:classappend="${i == currentPage ? 'active' : ''}">
+                                <a class="page-link" th:href="@{/groups/{id}(id=${group.id}, page=${i})}" th:text="${i + 1}">1</a>
+                            </li>
+                            <li class="page-item" th:classappend="${currentPage >= totalPages - 1 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/groups/{id}(id=${group.id}, page=${currentPage + 1})}">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Members Sidebar -->
+            <div class="col-lg-4">
+                <div class="members-sidebar">
+                    <div class="p-3 bg-light border-bottom">
+                        <h5 class="mb-0">
+                            <i class="fas fa-users text-primary"></i> Members
+                            <span class="badge bg-primary ms-2" th:text="${members.size()}">0</span>
+                        </h5>
+                    </div>
+                    
+                    <div th:each="member : ${members}" class="member-item">
+                        <div class="member-avatar" th:text="${member.user.username.substring(0,1).toUpperCase()}">A</div>
+                        <div class="member-info">
+                            <div class="member-name" th:text="${member.user.username}">Username</div>
+                            <div class="member-role">
+                                <span th:if="${member.role.name() == 'ADMIN'}" class="text-danger">
+                                    <i class="fas fa-crown"></i> Admin
+                                </span>
+                                <span th:if="${member.role.name() == 'MODERATOR'}" class="text-warning">
+                                    <i class="fas fa-shield-alt"></i> Moderator
+                                </span>
+                                <span th:if="${member.role.name() == 'MEMBER'}" class="text-muted">
+                                    <i class="fas fa-user"></i> Member
+                                </span>
+                                <small class="text-muted d-block">
+                                    Joined <span th:text="${#temporals.format(member.joinedAt, 'MMM dd')}">Date</span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Use common scripts -->
+    <div th:replace="~{layout :: scripts}"></div>
+    
+    <script>
+        // Auto-scroll to bottom of messages
+        function scrollToBottom() {
+            const container = document.getElementById('messagesContainer');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Scroll to bottom on page load
+        window.addEventListener('load', scrollToBottom);
+
+        // Focus message input
+        document.querySelector('input[name="content"]').focus();
+
+        // Auto-refresh messages every 30 seconds
+        setInterval(function() {
+            location.reload();
+        }, 30000);
+
+        // Handle Enter key in message input
+        document.querySelector('input[name="content"]').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                this.closest('form').submit();
+            }
+        });
+    </script>
+</body>
+</html> 

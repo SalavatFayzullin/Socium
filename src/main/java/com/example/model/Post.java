@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,14 +17,22 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Post title is required")
+    @Size(max = 200, message = "Post title must be less than 200 characters")
+    @Column(name = "title")
+    private String title;
+
     @NotBlank(message = "Post content is required")
-    @Size(max = 1000, message = "Post content must be less than 1000 characters")
+    @Size(max = 5000, message = "Post content must be less than 5000 characters")
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
@@ -37,7 +46,14 @@ public class Post {
 
     public Post() {}
 
+    public Post(String title, String content, User author) {
+        this.title = title;
+        this.content = content;
+        this.author = author;
+    }
+
     public Post(String content, User author) {
+        this.title = "Untitled Post";
         this.content = content;
         this.author = author;
     }
@@ -49,6 +65,14 @@ public class Post {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getContent() {
@@ -65,6 +89,14 @@ public class Post {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public User getAuthor() {
@@ -98,5 +130,41 @@ public class Post {
 
     public int getCommentCount() {
         return comments != null ? comments.size() : 0;
+    }
+
+    public String getHtmlContent() {
+        if (content == null || content.trim().isEmpty()) {
+            return "";
+        }
+        
+        // Simple markdown-to-HTML conversion
+        String html = content
+            // Headers
+            .replaceAll("(?m)^### (.*?)$", "<h3>$1</h3>")
+            .replaceAll("(?m)^## (.*?)$", "<h2>$1</h2>")
+            .replaceAll("(?m)^# (.*?)$", "<h1>$1</h1>")
+            // Bold and italic
+            .replaceAll("\\*\\*(.*?)\\*\\*", "<strong>$1</strong>")
+            .replaceAll("\\*(.*?)\\*", "<em>$1</em>")
+            // Code
+            .replaceAll("`(.*?)`", "<code>$1</code>")
+            // Links
+            .replaceAll("\\[(.*?)\\]\\((.*?)\\)", "<a href=\"$2\">$1</a>")
+            // Line breaks
+            .replaceAll("\\n", "<br>");
+            
+        return html;
+    }
+
+    public long getViewCount() {
+        // For now, return a placeholder value
+        // This would typically be stored in the database
+        return 0;
+    }
+
+    public boolean isLikedByUser(Object user) {
+        // This method would check if the current user has liked this post
+        // For now, return false as a placeholder
+        return false;
     }
 } 

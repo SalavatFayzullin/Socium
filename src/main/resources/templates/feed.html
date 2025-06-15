@@ -20,8 +20,20 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .navbar {
-            background: rgba(255, 255, 255, 0.95) !important;
+            background: rgba(33, 37, 41, 0.95) !important;
             backdrop-filter: blur(10px);
+        }
+        .navbar-brand {
+            color: white !important;
+        }
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+        }
+        .navbar-text {
+            color: rgba(255, 255, 255, 0.9) !important;
         }
         .btn-primary {
             background: linear-gradient(45deg, #667eea, #764ba2);
@@ -186,131 +198,102 @@
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="/">
-                <i class="fas fa-shield-alt me-2"></i>Spring Auth App
-            </a>
-            <div class="navbar-nav ms-auto">
-                <span class="navbar-text me-3">
-                    <img th:src="${user.avatarUrl}" th:alt="${user.username} + ' avatar'" 
-                         class="navbar-avatar me-2" onerror="this.src='/images/default-avatar.png'">
-                    Welcome, <span th:text="${username}" class="fw-bold"></span>!
-                </span>
-                <a class="nav-link active" href="/personal/feed">
-                    <i class="fas fa-rss me-1"></i>Feed
-                </a>
-                <a class="nav-link" href="/chat">
-                    <i class="fas fa-comments me-1"></i>Chat
-                </a>
-                <a class="nav-link" href="/personal">
-                    <i class="fas fa-user me-1"></i>My Profile
-                </a>
-                <form class="d-inline" th:action="@{/logout}" method="post">
-                    <button type="submit" class="btn btn-danger btn-sm">
-                        <i class="fas fa-sign-out-alt me-1"></i>Logout
-                    </button>
-                </form>
-            </div>
-        </div>
-    </nav>
+    <!-- Use common header -->
+    <div th:replace="~{layout :: header}"></div>
 
     <!-- Feed Header -->
     <div class="feed-header">
         <div class="container">
             <h1 class="feed-title">
-                <i class="fas fa-rss me-3"></i>Community Feed
+                <i class="fas fa-rss me-3"></i>
+                Community Feed
             </h1>
             <p class="feed-subtitle">
-                Discover what everyone is sharing
+                Discover posts from the community
             </p>
         </div>
     </div>
 
     <div class="container mt-4">
+        <!-- Feed Content -->
         <div class="row justify-content-center">
-            <div class="col-md-8">
-                <!-- Posts Feed -->
-                <div th:if="${posts.hasContent()}">
-                    <div th:each="post : ${posts.content}" class="post-card card mb-3">
+            <div class="col-lg-8">
+                <div th:if="${posts.empty}" class="text-center py-5">
+                    <div class="card">
                         <div class="card-body">
-                            <div class="post-header">
-                                <div class="post-author">
-                                    <div class="post-avatar">
-                                        <img th:src="${post.author.avatarUrl}" th:alt="${post.author.username} + ' avatar'" 
-                                             class="avatar-img" onerror="this.src='/images/default-avatar.png'">
-                                    </div>
-                                    <div>
-                                        <a th:href="@{'/personal/user/' + ${post.author.username}}" 
-                                           class="user-link" th:text="${post.author.username}">Author</a>
-                                        <br>
-                                        <small class="post-time">
-                                            <i class="fas fa-clock me-1"></i>
-                                            <span th:text="${#temporals.format(post.createdAt, 'MMM dd, yyyy HH:mm')}">Date</span>
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-text post-content" th:utext="${@markdownUtil.toHtml(post.content)}">Post content</div>
-                            
-                            <!-- Post Actions -->
-                            <div class="post-actions mt-3 pt-3 border-top">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="post-stats">
-                                        <span class="text-muted me-3">
-                                            <i class="far fa-heart me-1"></i>
-                                            <span th:text="${post.likeCount}">0</span> likes
-                                        </span>
-                                        <span class="text-muted">
-                                            <i class="far fa-comments me-1"></i>
-                                            <span th:text="${post.commentCount}">0</span> comments
-                                        </span>
-                                    </div>
-                                    <a th:href="@{'/personal/post/' + ${post.id}}" class="btn btn-outline-primary btn-sm">
-                                        <i class="fas fa-eye me-1"></i>View Post
-                                    </a>
-                                </div>
-                            </div>
+                            <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">No posts yet</h4>
+                            <p class="text-muted">Be the first to share something with the community!</p>
+                            <a href="/personal" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Create Your First Post
+                            </a>
                         </div>
-                    </div>
-
-                    <!-- Pagination -->
-                    <div class="pagination-wrapper" th:if="${posts.totalPages > 1}">
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination">
-                                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled' : ''">
-                                    <a class="page-link" th:href="@{/personal/feed(page=${currentPage - 1})}">&laquo; Previous</a>
-                                </li>
-                                
-                                <li th:each="i : ${#numbers.sequence(0, posts.totalPages - 1)}" 
-                                    class="page-item" th:classappend="${i == currentPage} ? 'active' : ''">
-                                    <a class="page-link" th:href="@{/personal/feed(page=${i})}" th:text="${i + 1}">1</a>
-                                </li>
-                                
-                                <li class="page-item" th:classappend="${currentPage >= posts.totalPages - 1} ? 'disabled' : ''">
-                                    <a class="page-link" th:href="@{/personal/feed(page=${currentPage + 1})}">Next &raquo;</a>
-                                </li>
-                            </ul>
-                        </nav>
                     </div>
                 </div>
 
-                <!-- No Posts Message -->
-                <div th:unless="${posts.hasContent()}" class="card text-center">
-                    <div class="card-body py-5">
-                        <i class="fas fa-newspaper fa-5x text-muted mb-4"></i>
-                        <h3 class="text-muted">No Posts Yet</h3>
-                        <p class="text-muted mb-4">Be the first to share something with the community!</p>
-                        <a href="/personal" class="btn btn-primary">
-                            <i class="fas fa-plus me-2"></i>Create Your First Post
-                        </a>
+                <div th:each="post : ${posts}" class="post-card card">
+                    <div class="card-body">
+                        <div class="post-header">
+                            <div class="post-author">
+                                <div class="post-avatar" th:if="${post.author.avatarUrl == null or post.author.avatarUrl.isEmpty()}">
+                                    <span th:text="${post.author.username.substring(0,1).toUpperCase()}">A</span>
+                                </div>
+                                <img th:if="${post.author.avatarUrl != null and !post.author.avatarUrl.isEmpty()}" 
+                                     th:src="${post.author.avatarUrl}" 
+                                     th:alt="|${post.author.username} avatar|" 
+                                     class="post-avatar avatar-img"
+                                     onerror="this.style.display='none'; this.parentElement.querySelector('.post-avatar:first-child').style.display='flex';">
+                                <div>
+                                    <a th:href="@{/user/{username}(username=${post.author.username})}" class="user-link">
+                                        <span th:text="${post.author.username}">Username</span>
+                                    </a>
+                                    <div class="post-time">
+                                        <i class="fas fa-clock me-1"></i>
+                                        <span th:text="${#temporals.format(post.createdAt, 'MMM dd, yyyy HH:mm')}">Date and time</span>
+                                        <span th:if="${post.updatedAt != null and !post.updatedAt.equals(post.createdAt)}">
+                                            (edited)
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h5 class="card-title" th:text="${post.title}">Post Title</h5>
+                        <div class="post-content" th:utext="${post.getHtmlContent()}">
+                            Post content will be rendered here
+                        </div>
+                        
+                        <div class="text-end mt-3">
+                            <a th:href="@{/post/{id}(id=${post.id})}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye me-1"></i>Read More
+                            </a>
+                        </div>
                     </div>
+                </div>
+
+                <!-- Pagination -->
+                <div th:if="${totalPages > 1}" class="pagination-wrapper">
+                    <nav aria-label="Feed pagination">
+                        <ul class="pagination">
+                            <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/personal/feed(page=${currentPage - 1})}">Previous</a>
+                            </li>
+                            <li class="page-item" 
+                                th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                                th:classappend="${i == currentPage ? 'active' : ''}">
+                                <a class="page-link" th:href="@{/personal/feed(page=${i})}" th:text="${i + 1}">1</a>
+                            </li>
+                            <li class="page-item" th:classappend="${currentPage >= totalPages - 1 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/personal/feed(page=${currentPage + 1})}">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Use common scripts -->
+    <div th:replace="~{layout :: scripts}"></div>
 </body>
 </html> 

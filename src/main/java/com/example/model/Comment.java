@@ -25,6 +25,9 @@ public class Comment {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
@@ -81,6 +84,14 @@ public class Comment {
         this.createdAt = createdAt;
     }
 
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     public Post getPost() {
         return post;
     }
@@ -120,5 +131,29 @@ public class Comment {
 
     public int getReplyCount() {
         return replies != null ? replies.size() : 0;
+    }
+
+    public String getHtmlContent() {
+        if (content == null || content.trim().isEmpty()) {
+            return "";
+        }
+        
+        // Simple markdown-to-HTML conversion
+        String html = content
+            // Headers
+            .replaceAll("(?m)^### (.*?)$", "<h3>$1</h3>")
+            .replaceAll("(?m)^## (.*?)$", "<h2>$1</h2>")
+            .replaceAll("(?m)^# (.*?)$", "<h1>$1</h1>")
+            // Bold and italic
+            .replaceAll("\\*\\*(.*?)\\*\\*", "<strong>$1</strong>")
+            .replaceAll("\\*(.*?)\\*", "<em>$1</em>")
+            // Code
+            .replaceAll("`(.*?)`", "<code>$1</code>")
+            // Links
+            .replaceAll("\\[(.*?)\\]\\((.*?)\\)", "<a href=\"$2\">$1</a>")
+            // Line breaks
+            .replaceAll("\\n", "<br>");
+            
+        return html;
     }
 } 

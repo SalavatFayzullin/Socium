@@ -19,10 +19,6 @@
             background: rgba(255, 255, 255, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .navbar {
-            background: rgba(255, 255, 255, 0.95) !important;
-            backdrop-filter: blur(10px);
-        }
         .btn-primary {
             background: linear-gradient(45deg, #667eea, #764ba2);
             border: none;
@@ -93,35 +89,8 @@
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="/">
-                <i class="fas fa-shield-alt me-2"></i>Spring Auth App
-            </a>
-            <div class="navbar-nav ms-auto">
-                <span class="navbar-text me-3">
-                    <img th:src="${user.avatarUrl}" th:alt="${user.username} + ' avatar'" 
-                         class="navbar-avatar me-2" onerror="this.src='/images/default-avatar.png'">
-                    Welcome, <span th:text="${username}" class="fw-bold"></span>!
-                </span>
-                <a class="nav-link" href="/personal/feed">
-                    <i class="fas fa-rss me-1"></i>Feed
-                </a>
-                <a class="nav-link" href="/chat">
-                    <i class="fas fa-comments me-1"></i>Chat
-                </a>
-                <a class="nav-link" href="/personal">
-                    <i class="fas fa-user me-1"></i>My Profile
-                </a>
-                <form class="d-inline" th:action="@{/logout}" method="post">
-                    <button type="submit" class="btn btn-danger btn-sm">
-                        <i class="fas fa-sign-out-alt me-1"></i>Logout
-                    </button>
-                </form>
-            </div>
-        </div>
-    </nav>
+    <!-- Use common header -->
+    <div th:replace="~{layout :: header}"></div>
 
     <div class="container mt-4">
         <!-- Back Button -->
@@ -136,7 +105,7 @@
             <!-- Chat Header -->
             <div class="chat-header">
                 <div class="d-flex align-items-center">
-                    <img th:src="${otherUser.avatarUrl}" th:alt="${otherUser.username} + ' avatar'" 
+                    <img th:src="${otherUser.avatarUrl}" th:alt="|${otherUser.username} avatar|" 
                          class="other-user-avatar me-3" onerror="this.src='/images/default-avatar.png'">
                     <div>
                         <h5 class="mb-0" th:text="${otherUser.username}">Username</h5>
@@ -160,9 +129,9 @@
                 </div>
 
                 <div th:each="message : ${messages}" 
-                     th:class="'message ' + (${message.sender.id == currentUser.id} ? 'own' : '')">
+                     th:class="'message ' + (${currentUser != null and message.sender.id == currentUser.id} ? 'own' : '')">
                     <img th:src="${message.sender.avatarUrl}" 
-                         th:alt="${message.sender.username} + ' avatar'" 
+                         th:alt="|${message.sender.username} avatar|" 
                          class="message-avatar" onerror="this.src='/images/default-avatar.png'">
                     <div class="message-content">
                         <div th:text="${message.content}">Message content</div>
@@ -190,7 +159,9 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Use common scripts -->
+    <div th:replace="~{layout :: scripts}"></div>
+    
     <script>
         let lastMessageTime = null;
         let isPolling = false;
@@ -198,140 +169,105 @@
 
         // Auto-scroll to bottom
         function scrollToBottom() {
-            const chatContainer = document.getElementById('chatContainer');
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            const container = document.getElementById('chatContainer');
+            container.scrollTop = container.scrollHeight;
         }
 
-        // Format date for display
-        function formatMessageTime(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric', 
-                hour: '2-digit', 
-                minute: '2-digit' 
-            });
-        }
-
-        // Create message HTML
-        function createMessageHTML(message) {
-            const messageClass = message.isOwn ? 'message own' : 'message';
-            return `
-                <div class="${messageClass}">
-                    <img src="${message.sender.avatarUrl}" 
-                         alt="${message.sender.username} avatar" 
-                         class="message-avatar" 
-                         onerror="this.src='/images/default-avatar.png'">
-                    <div class="message-content">
-                        <div>${message.content}</div>
-                        <div class="message-time">${formatMessageTime(message.createdAt)}</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // Add new messages to chat
-        function addNewMessages(messages) {
-            const chatContainer = document.getElementById('chatContainer');
-            const noMessagesDiv = chatContainer.querySelector('.text-center.py-5');
+        // Load new messages
+        function loadNewMessages() {
+            const chatId = window.location.pathname.split('/chat/')[1].split('/')[0];
+            const url = `/api/chat/${chatId}/messages/updates${lastMessageTime ? '?since=' + encodeURIComponent(lastMessageTime) : ''}`;
             
-            // Remove "no messages" placeholder if it exists
-            if (noMessagesDiv) {
-                noMessagesDiv.remove();
-            }
-
-            messages.forEach(message => {
-                chatContainer.insertAdjacentHTML('beforeend', createMessageHTML(message));
-                lastMessageTime = message.createdAt;
-            });
-
-            scrollToBottom();
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.messages && data.messages.length > 0) {
+                        data.messages.forEach(message => {
+                            addMessageToChat(message);
+                            lastMessageTime = message.createdAt;
+                        });
+                        scrollToBottom();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading new messages:', error);
+                    showConnectionStatus('Connection error', 'danger');
+                });
         }
 
-        // Show/hide connection status
+        // Add message to chat
+        function addMessageToChat(message) {
+            const chatContainer = document.getElementById('chatContainer');
+            const isOwn = message.senderId === parseInt(document.body.dataset.currentUserId || '0');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isOwn ? 'own' : ''}`;
+            
+            const avatarImg = document.createElement('img');
+            avatarImg.src = message.senderAvatar || '/images/default-avatar.png';
+            avatarImg.alt = message.senderUsername + ' avatar';
+            avatarImg.className = 'message-avatar';
+            avatarImg.onerror = function() { this.src = '/images/default-avatar.png'; };
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            
+            const textDiv = document.createElement('div');
+            textDiv.textContent = message.content;
+            
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'message-time';
+            timeDiv.textContent = new Date(message.createdAt).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            contentDiv.appendChild(textDiv);
+            contentDiv.appendChild(timeDiv);
+            
+            messageDiv.appendChild(avatarImg);
+            messageDiv.appendChild(contentDiv);
+            
+            chatContainer.appendChild(messageDiv);
+        }
+
+        // Show connection status
         function showConnectionStatus(message, type = 'info') {
             const statusDiv = document.getElementById('connectionStatus');
             const statusText = document.getElementById('statusText');
             
-            statusDiv.className = `alert alert-${type} text-center`;
             statusText.textContent = message;
+            statusDiv.className = `alert alert-${type} text-center`;
             statusDiv.style.display = 'block';
             
-            // Auto-hide after 3 seconds for success messages
-            if (type === 'success') {
+            if (type !== 'danger') {
                 setTimeout(() => {
                     statusDiv.style.display = 'none';
                 }, 3000);
             }
         }
 
-        function hideConnectionStatus() {
-            const statusDiv = document.getElementById('connectionStatus');
-            statusDiv.style.display = 'none';
-        }
-
-        // Long polling function
-        function startLongPolling() {
+        // Start polling for new messages
+        function startPolling() {
             if (isPolling) return;
             
             isPolling = true;
-            const chatId = window.location.pathname.split('/').pop();
-            let consecutiveErrors = 0;
+            showConnectionStatus('Connected', 'success');
             
             function poll() {
                 if (!isPolling) return;
-
-                const url = `/api/chat/${chatId}/messages/latest` + 
-                           (lastMessageTime ? `?lastMessageTime=${encodeURIComponent(lastMessageTime)}` : '');
                 
-                fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    consecutiveErrors = 0;
-                    hideConnectionStatus();
-                    
-                    if (data.messages && data.messages.length > 0) {
-                        addNewMessages(data.messages);
-                        showConnectionStatus(`${data.messages.length} new message(s) received`, 'success');
-                    }
-                    
-                    // Continue polling
-                    if (isPolling) {
-                        pollTimeout = setTimeout(poll, 2000); // Poll every 2 seconds
-                    }
-                })
-                .catch(error => {
-                    console.error('Polling error:', error);
-                    consecutiveErrors++;
-                    
-                    if (consecutiveErrors === 1) {
-                        showConnectionStatus('Connection lost, retrying...', 'warning');
-                    } else if (consecutiveErrors >= 3) {
-                        showConnectionStatus('Connection problems. Check your internet.', 'danger');
-                    }
-                    
-                    if (isPolling) {
-                        const retryDelay = Math.min(5000 * consecutiveErrors, 30000); // Max 30 seconds
-                        pollTimeout = setTimeout(poll, retryDelay);
-                    }
-                });
+                loadNewMessages();
+                pollTimeout = setTimeout(poll, 2000); // Poll every 2 seconds
             }
-
+            
             poll();
         }
 
-        // Stop long polling
-        function stopLongPolling() {
+        // Stop polling
+        function stopPolling() {
             isPolling = false;
             if (pollTimeout) {
                 clearTimeout(pollTimeout);
@@ -339,87 +275,58 @@
             }
         }
 
-        // Initialize last message time from existing messages
-        function initializeLastMessageTime() {
+        // Initialize chat
+        window.addEventListener('load', function() {
+            scrollToBottom();
+            
+            // Set last message time from existing messages
             const messages = document.querySelectorAll('.message');
             if (messages.length > 0) {
                 const lastMessage = messages[messages.length - 1];
                 const timeElement = lastMessage.querySelector('.message-time');
                 if (timeElement) {
-                    // Extract time from the last message and convert to ISO format
-                    const timeText = timeElement.textContent.trim();
-                    // This is a simplified approach - in production you'd want more robust parsing
-                    const now = new Date();
-                    lastMessageTime = now.toISOString();
+                    lastMessageTime = timeElement.getAttribute('data-time') || new Date().toISOString();
                 }
             }
-        }
-
-        // Handle form submission with AJAX
-        function handleMessageSubmit(event) {
-            event.preventDefault();
             
-            const form = event.target;
-            const formData = new FormData(form);
-            const messageInput = form.querySelector('input[name="content"]');
-            const submitButton = form.querySelector('button[type="submit"]');
+            startPolling();
             
-            // Disable input and button during submission
-            messageInput.disabled = true;
-            submitButton.disabled = true;
-            
-            fetch(form.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    messageInput.value = '';
-                    // The new message will be picked up by long polling
-                } else {
-                    console.error('Failed to send message');
-                }
-            })
-            .catch(error => {
-                console.error('Error sending message:', error);
-            })
-            .finally(() => {
-                messageInput.disabled = false;
-                submitButton.disabled = false;
-                messageInput.focus();
-            });
-        }
-
-        // Page initialization
-        window.addEventListener('load', function() {
-            scrollToBottom();
-            initializeLastMessageTime();
-            startLongPolling();
-            
-            // Handle form submission
-            const messageForm = document.querySelector('form');
-            if (messageForm) {
-                messageForm.addEventListener('submit', handleMessageSubmit);
-            }
+            // Focus message input
+            document.getElementById('messageInput').focus();
         });
 
-        // Submit on Enter
-        document.getElementById('messageInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                this.closest('form').dispatchEvent(new Event('submit'));
-            }
-        });
-
-        // Stop polling when page is about to unload
-        window.addEventListener('beforeunload', stopLongPolling);
-
-        // Handle visibility change (pause polling when tab is not active)
+        // Handle page visibility
         document.addEventListener('visibilitychange', function() {
             if (document.hidden) {
-                stopLongPolling();
+                stopPolling();
             } else {
-                startLongPolling();
+                startPolling();
+            }
+        });
+
+        // Stop polling before page unload
+        window.addEventListener('beforeunload', stopPolling);
+
+        // Handle message form submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const input = document.getElementById('messageInput');
+            if (!input.value.trim()) {
+                e.preventDefault();
+                return;
+            }
+            
+            // Clear input after short delay to allow form submission
+            setTimeout(() => {
+                input.value = '';
+                input.focus();
+            }, 100);
+        });
+
+        // Handle Enter key in message input
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                this.closest('form').submit();
             }
         });
     </script>

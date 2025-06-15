@@ -20,8 +20,20 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .navbar {
-            background: rgba(255, 255, 255, 0.95) !important;
+            background: rgba(33, 37, 41, 0.95) !important;
             backdrop-filter: blur(10px);
+        }
+        .navbar-brand {
+            color: white !important;
+        }
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+        }
+        .navbar-text {
+            color: rgba(255, 255, 255, 0.9) !important;
         }
         .btn-primary {
             background: linear-gradient(45deg, #667eea, #764ba2);
@@ -33,40 +45,48 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        .post-header {
+        .page-header {
             text-align: center;
-            padding: 40px 0;
+            padding: 20px 0;
             color: white;
+            margin-bottom: 20px;
         }
-        .post-title {
-            font-size: 2.5rem;
+        .page-title {
+            font-size: 2rem;
             font-weight: bold;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
-        .post-subtitle {
-            font-size: 1.1rem;
+        .page-subtitle {
+            font-size: 1rem;
             color: rgba(255, 255, 255, 0.9);
         }
         .post-main-card {
             border-left: 4px solid #667eea;
             margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
         .post-author {
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
         }
         .post-avatar {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: linear-gradient(45deg, #667eea, #764ba2);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            margin-right: 15px;
+            margin-right: 12px;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
         }
         .post-time {
             color: #6c757d;
@@ -105,7 +125,12 @@
         .comment-card {
             border-left: 3px solid #28a745;
             margin-bottom: 15px;
+            background: rgba(40, 167, 69, 0.02);
+            transition: all 0.2s ease;
+        }
+        .comment-card:hover {
             background: rgba(40, 167, 69, 0.05);
+            transform: translateX(2px);
         }
         .comment-author {
             display: flex;
@@ -113,8 +138,8 @@
             margin-bottom: 10px;
         }
         .comment-avatar {
-            width: 35px;
-            height: 35px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: linear-gradient(45deg, #28a745, #20c997);
             display: flex;
@@ -122,7 +147,10 @@
             justify-content: center;
             color: white;
             margin-right: 10px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
         }
         .comment-form {
             background: rgba(40, 167, 69, 0.1);
@@ -144,20 +172,24 @@
             border: none;
         }
         .back-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            border-radius: 50px;
-            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            color: #667eea;
+            border-radius: 25px;
+            padding: 8px 16px;
             text-decoration: none;
             transition: all 0.3s;
             display: inline-block;
             margin-bottom: 20px;
+            font-weight: 500;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .back-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: #667eea;
             color: white;
             text-decoration: none;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         .avatar-img {
             width: 100%;
@@ -369,50 +401,54 @@
             object-fit: cover;
             border: 2px solid rgba(102, 126, 234, 0.3);
         }
+        
+        /* Preview Tabs Styling */
+        .nav-tabs-sm .nav-link {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+        }
+        
+        .nav-tabs .nav-link {
+            border-bottom: 2px solid transparent;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background-color: transparent;
+            border-color: #667eea;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .nav-tabs .nav-link:hover {
+            border-color: rgba(102, 126, 234, 0.3);
+            color: #667eea;
+        }
+        
+        .tab-content {
+            border: 1px solid #dee2e6;
+            border-top: none;
+        }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="/">
-                <i class="fas fa-shield-alt me-2"></i>Spring Auth App
-            </a>
-            <div class="navbar-nav ms-auto">
-                <span class="navbar-text me-3">
-                    <img th:src="${user.avatarUrl}" th:alt="${user.username} + ' avatar'" 
-                         class="navbar-avatar me-2" onerror="this.src='/images/default-avatar.png'">
-                    Welcome, <span th:text="${username}" class="fw-bold"></span>!
-                </span>
-                <a class="nav-link" href="/personal/feed">
-                    <i class="fas fa-rss me-1"></i>Feed
-                </a>
-                <a class="nav-link" href="/chat">
-                    <i class="fas fa-comments me-1"></i>Chat
-                </a>
-                <a class="nav-link" href="/personal">
-                    <i class="fas fa-user me-1"></i>My Profile
-                </a>
-                <form class="d-inline" th:action="@{/logout}" method="post">
-                    <button type="submit" class="btn btn-danger btn-sm">
-                        <i class="fas fa-sign-out-alt me-1"></i>Logout
-                    </button>
-                </form>
-            </div>
-        </div>
-    </nav>
+    <!-- Use common header -->
+    <div th:replace="~{layout :: header}"></div>
 
-    <!-- Post Header -->
-    <div class="post-header">
+    <!-- Page Header -->
+    <div class="page-header">
         <div class="container">
-            <h1 class="post-title">
-                <i class="fas fa-comment-dots me-3"></i>Post Details
+            <h1 class="page-title">
+                <i class="fas fa-newspaper me-3"></i>
+                Post Details
             </h1>
-            <p class="post-subtitle">
-                Join the conversation
+            <p class="page-subtitle">
+                Read and engage with community content
             </p>
         </div>
     </div>
+
+    <!-- Use common alerts -->
+    <div th:replace="~{layout :: alerts}"></div>
 
     <div class="container mt-4">
         <!-- Back Button -->
@@ -420,261 +456,300 @@
             <i class="fas fa-arrow-left me-2"></i>Back to Feed
         </a>
 
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <!-- Success/Error Messages -->
-                <div th:if="${likeSuccess}" class="alert alert-success" role="alert">
-                    <i class="fas fa-heart me-2"></i>
-                    <span th:text="${likeSuccess}"></span>
+        <!-- Main Post -->
+        <div class="post-main-card card">
+            <div class="card-body">
+                <div class="post-author">
+                    <div class="post-avatar">
+                        <span th:if="${post.author.avatarUrl == null or post.author.avatarUrl.isEmpty()}" 
+                              th:text="${post.author.username.substring(0,1).toUpperCase()}">A</span>
+                        <img th:if="${post.author.avatarUrl != null and !post.author.avatarUrl.isEmpty()}" 
+                             th:src="${post.author.avatarUrl}" 
+                             th:alt="|${post.author.username} avatar|" 
+                             class="avatar-img"
+                             onerror="this.style.display='none'; this.parentElement.innerHTML='<span>' + this.alt.charAt(0).toUpperCase() + '</span>';">
+                    </div>
+                    <div>
+                        <a th:href="@{/user/{username}(username=${post.author.username})}" class="user-link">
+                            <span th:text="${post.author.username}">Author</span>
+                        </a>
+                        <div class="post-time">
+                            <i class="fas fa-clock me-1"></i>
+                                                                                                                         <span th:text="${#temporals.format(post.createdAt, 'MMMM dd, yyyy HH:mm')}">Date and time</span>
+                            <span th:if="${post.updatedAt != null and !post.updatedAt.equals(post.createdAt)}">
+                                (edited <span th:text="${#temporals.format(post.updatedAt, 'MMM dd, HH:mm')}">edit date</span>)
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                <div th:if="${commentSuccess}" class="alert alert-success" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>
-                    <span th:text="${commentSuccess}"></span>
+                
+                <h2 class="card-title mb-3" th:text="${post.title}">Post Title</h2>
+                <div class="post-content" th:utext="${post.getHtmlContent()}">
+                    Post content will be rendered here
                 </div>
-                <div th:if="${commentError}" class="alert alert-danger" role="alert">
-                    <i class="fas fa-exclamation-circle me-2"></i>
-                    <span th:text="${commentError}"></span>
+                
+                <!-- Post Interaction Bar -->
+                <div class="interaction-bar">
+                    <div>
+                        <button class="like-btn me-3" 
+                                th:classappend="${post.isLikedByUser(currentUser) ? 'liked' : ''}"
+                                onclick="toggleLike(this)" 
+                                th:data-post-id="${post.id}">
+                            <i class="fas fa-heart me-1"></i>
+                            <span th:text="${post.likeCount}">0</span>
+                        </button>
+                        <span class="text-muted">
+                            <i class="fas fa-comments me-1"></i>
+                            <span th:text="${post.commentCount}">0</span> comments
+                        </span>
+                    </div>
+                    <div>
+                        <span class="text-muted">Views: <span th:text="${post.viewCount}">0</span></span>
+                    </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Main Post -->
-                <div class="card post-main-card">
-                    <div class="card-body">
-                        <div class="post-author">
-                            <div class="post-avatar">
-                                <img th:src="${post.author.avatarUrl}" th:alt="${post.author.username} + ' avatar'" 
-                                     class="avatar-img" onerror="this.src='/images/default-avatar.png'">
-                            </div>
-                            <div>
-                                <a th:href="@{'/personal/user/' + ${post.author.username}}" 
-                                   class="user-link" th:text="${post.author.username}">Author</a>
-                                <br>
-                                <small class="post-time">
-                                    <i class="fas fa-clock me-1"></i>
-                                    <span th:text="${#temporals.format(post.createdAt, 'MMM dd, yyyy HH:mm')}">Date</span>
-                                </small>
+        <!-- Comments Section -->
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-comments me-2"></i>Comments (<span th:text="${post.commentCount}">0</span>)</h5>
+            </div>
+            <div class="card-body">
+                <!-- Add Comment Form -->
+                <div sec:authorize="isAuthenticated()" class="comment-form">
+                    <h6 class="mb-3"><i class="fas fa-pen me-2"></i>Add a Comment</h6>
+                    <form th:action="@{/post/{id}/comment(id=${post.id})}" method="post">
+                        <!-- Tabs for Write/Preview -->
+                        <div class="mb-3">
+                            <ul class="nav nav-tabs nav-tabs-sm" id="commentTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="comment-write-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#comment-write-pane" type="button" role="tab">
+                                        <i class="fas fa-edit me-1"></i>Write
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="comment-preview-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#comment-preview-pane" type="button" role="tab"
+                                            onclick="updateCommentPreview()">
+                                        <i class="fas fa-eye me-1"></i>Preview
+                                    </button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="commentTabContent">
+                                <div class="tab-pane fade show active" id="comment-write-pane" role="tabpanel">
+                                    <textarea class="form-control" name="content" id="commentContent" rows="3" 
+                                              placeholder="Share your thoughts... (Markdown supported)" 
+                                              maxlength="1000" required style="border-top: none; border-radius: 0 0 0.375rem 0.375rem;"></textarea>
+                                    <div class="form-text">
+                                        You can use <a href="/markdown-guide" target="_blank">Markdown</a> for formatting. Max 1000 characters.
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="comment-preview-pane" role="tabpanel">
+                                    <div class="card comment-preview" style="border-top: none; border-radius: 0 0 0.375rem 0.375rem; min-height: 120px;">
+                                        <div class="card-body">
+                                            <div id="commentMarkdownPreview" class="comment-content">
+                                                <p class="text-muted"><em>Start writing to see your preview...</em></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="card-text post-content fs-5 mb-4" th:utext="${@markdownUtil.toHtml(post.content)}">Post content</div>
-                        
-                        <!-- Interaction Bar -->
-                        <div class="interaction-bar">
-                            <div class="d-flex align-items-center">
-                                <!-- Like Button -->
-                                <form th:action="@{'/personal/post/' + ${post.id} + '/like'}" method="post" class="d-inline me-3">
-                                    <button type="submit" class="like-btn" th:classappend="${isLikedByUser} ? 'liked' : ''">
-                                        <i th:class="${isLikedByUser} ? 'fas fa-heart' : 'far fa-heart'"></i>
-                                        <span th:text="${likeCount}">0</span>
-                                    </button>
-                                </form>
-                                
-                                <!-- Comment Count -->
-                                <span class="text-muted">
-                                    <i class="fas fa-comments me-1"></i>
-                                    <span th:text="${commentCount}">0</span> Comments
-                                </span>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="/markdown-guide" target="_blank" class="btn btn-outline-info btn-sm me-md-2">
+                                <i class="fas fa-question-circle me-1"></i>Markdown Help
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-comment me-2"></i>Post Comment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Login Prompt for Anonymous Users -->
+                <div sec:authorize="!isAuthenticated()" class="comment-form text-center">
+                    <h6 class="mb-3"><i class="fas fa-sign-in-alt me-2"></i>Join the Discussion</h6>
+                    <p class="text-muted mb-3">Please log in to add your comment to this post.</p>
+                    <div>
+                        <a href="/login" class="btn btn-primary me-2">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                        </a>
+                        <a href="/register" class="btn btn-outline-primary">
+                            <i class="fas fa-user-plus me-1"></i>Register
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Comments List -->
+                <div class="mt-4">
+                    <div th:if="${comments.empty}" class="text-center py-4">
+                        <i class="fas fa-comment-dots fa-3x text-muted mb-3"></i>
+                        <h6 class="text-muted">No comments yet</h6>
+                        <p class="text-muted">Be the first to share your thoughts!</p>
+                    </div>
+
+                    <div th:each="comment : ${comments}" class="comment-card card">
+                        <div class="card-body">
+                            <div class="comment-author">
+                                <div class="comment-avatar">
+                                    <span th:if="${comment.author.avatarUrl == null or comment.author.avatarUrl.isEmpty()}" 
+                                          th:text="${comment.author.username.substring(0,1).toUpperCase()}">A</span>
+                                    <img th:if="${comment.author.avatarUrl != null and !comment.author.avatarUrl.isEmpty()}" 
+                                         th:src="${comment.author.avatarUrl}" 
+                                         th:alt="|${comment.author.username} avatar|" 
+                                         class="comment-avatar-img"
+                                         onerror="this.style.display='none'; this.parentElement.innerHTML='<span>' + this.alt.charAt(0).toUpperCase() + '</span>';">
+                                </div>
+                                <div>
+                                    <a th:href="@{/user/{username}(username=${comment.author.username})}" class="user-link">
+                                        <span th:text="${comment.author.username}">Author</span>
+                                    </a>
+                                    <div class="post-time">
+                                        <i class="fas fa-clock me-1"></i>
+                                        <span th:text="${#temporals.format(comment.createdAt, 'MMM dd, yyyy HH:mm')}">Date and time</span>
+                                        <span th:if="${comment.updatedAt != null and !comment.updatedAt.equals(comment.createdAt)}">
+                                            (edited)
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                             
-                            <!-- Delete Post Button (if owner) -->
-                            <div th:if="${canDeletePost}">
-                                <form th:action="@{'/personal/post/' + ${post.id} + '/delete'}" method="post" class="d-inline"
-                                      onsubmit="return confirm('Are you sure you want to delete this post and all its comments?')">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">
-                                        <i class="fas fa-trash me-1"></i>Delete Post
+                            <div class="comment-content" th:utext="${comment.getHtmlContent()}">
+                                Comment content will be rendered here
+                            </div>
+                            
+                            <!-- Comment Actions -->
+                            <div class="mt-2" sec:authorize="isAuthenticated()">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <!-- Reply Button -->
+                                    <button class="btn btn-link btn-sm p-0" 
+                                            th:onclick="|toggleReplyForm('reply-form-${comment.id}')|">
+                                        <i class="fas fa-reply me-1"></i>Reply
                                     </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Comments Section -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-comments me-2"></i>Comments (<span th:text="${commentCount}">0</span>)</h5>
-                    </div>
-                    <div class="card-body">
-                        <!-- Add Comment Form -->
-                        <div class="comment-form">
-                            <h6 class="mb-3">Add a Comment</h6>
-                            <form th:action="@{'/personal/post/' + ${post.id} + '/comment'}" th:object="${newComment}" method="post">
-                                <div class="mb-3">
-                                    <label for="commentContent" class="form-label">
-                                        <i class="fab fa-markdown me-2"></i>Comment (Markdown Supported)
-                                    </label>
-                                    <textarea class="form-control" id="commentContent" th:field="*{content}" rows="3" 
-                                             placeholder="Share your thoughts... You can use **bold**, *italic*, `code`, [links](url), and more!" 
-                                             maxlength="500" required></textarea>
-                                    <small class="form-text text-muted">
-                                        Maximum 500 characters. Supports Markdown formatting.
-                                        <a href="/personal/markdown-guide" target="_blank" class="text-decoration-none">
-                                            <i class="fas fa-question-circle me-1"></i>Guide
-                                        </a>
-                                    </small>
-                                </div>
-                                
-                                <!-- Comment Markdown Preview -->
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <label class="form-label mb-0">Preview:</label>
-                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleCommentPreview()">
-                                            <i class="fas fa-eye me-1"></i>Toggle Preview
-                                        </button>
-                                    </div>
-                                    <div id="commentMarkdownPreview" class="border rounded p-3 bg-light comment-preview" style="display: block; min-height: 80px;">
-                                        <em class="text-muted">Preview will appear here...</em>
-                                    </div>
-                                </div>
-                                
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-paper-plane me-2"></i>Post Comment
-                                </button>
-                            </form>
-                        </div>
-
-                        <!-- Comments List -->
-                        <div class="mt-4">
-                            <div th:if="${#lists.isEmpty(comments)}" class="text-center py-4">
-                                <i class="fas fa-comments fa-3x text-muted mb-3"></i>
-                                <p class="text-muted">No comments yet. Be the first to comment!</p>
-                            </div>
-
-                            <!-- Top-level comments with nested replies -->
-                            <div th:each="comment : ${comments}" class="comment-thread mb-4">
-                                <!-- Main Comment -->
-                                <div class="comment-card card mb-2">
-                                    <div class="card-body">
-                                        <div class="comment-author">
-                                            <div class="comment-avatar">
-                                                <img th:src="${comment.author.avatarUrl}" th:alt="${comment.author.username} + ' avatar'" 
-                                                     class="comment-avatar-img" onerror="this.src='/images/default-avatar.png'">
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <div class="d-flex justify-content-between align-items-start">
-                                                    <div>
-                                                        <a th:href="@{'/personal/user/' + ${comment.author.username}}" 
-                                                           class="user-link" th:text="${comment.author.username}">Commenter</a>
-                                                        <br>
-                                                        <small class="post-time">
-                                                            <i class="fas fa-clock me-1"></i>
-                                                            <span th:text="${#temporals.format(comment.createdAt, 'MMM dd, yyyy HH:mm')}">Date</span>
-                                                        </small>
-                                                    </div>
-                                                    <div th:if="${currentUser.id == comment.author.id}">
-                                                        <form th:action="@{'/personal/comment/' + ${comment.id} + '/delete'}" method="post" class="d-inline"
-                                                              onsubmit="return confirm('Are you sure you want to delete this comment and all its replies?')">
-                                                            <button type="submit" class="btn btn-outline-danger btn-sm">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card-text comment-content mt-2" th:utext="${@markdownUtil.toHtml(comment.content)}">Comment content</div>
-                                        
-                                        <!-- Comment Actions -->
-                                        <div class="comment-actions mt-3 pt-2 border-top">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none" 
-                                                            th:onclick="'toggleReplyForm(' + ${comment.id} + ')'">
-                                                        <i class="fas fa-reply me-1"></i>Reply
-                                                    </button>
-                                                    <span th:if="${comment.replyCount > 0}" class="text-muted ms-3">
-                                                        <i class="fas fa-comments me-1"></i>
-                                                        <span th:text="${comment.replyCount}">0</span> replies
-                                                    </span>
-                                                    <button th:if="${comment.replyCount > 0}" type="button" 
-                                                            class="btn btn-link btn-sm p-0 text-decoration-none ms-3" 
-                                                            th:id="'toggle-replies-btn-' + ${comment.id}"
-                                                            th:onclick="'toggleReplies(' + ${comment.id} + ')'">
-                                                        <i class="fas fa-chevron-down me-1"></i>Show replies
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Reply Form (Initially Hidden) -->
-                                        <div th:id="'reply-form-' + ${comment.id}" class="reply-form mt-3" style="display: none;">
-                                            <form th:action="@{'/personal/post/' + ${post.id} + '/comment/' + ${comment.id} + '/reply'}" method="post">
-                                                <div class="mb-3">
-                                                    <label class="form-label">
-                                                        <i class="fab fa-markdown me-2"></i>Reply to <strong th:text="${comment.author.username}">User</strong>
-                                                    </label>
-                                                    <textarea class="form-control reply-textarea" name="content" rows="3" 
-                                                             placeholder="Write your reply... Markdown supported!" 
-                                                             maxlength="500" required></textarea>
-                                                    <small class="form-text text-muted">Maximum 500 characters. Supports Markdown formatting.</small>
-                                                </div>
-                                                
-                                                <!-- Reply Preview -->
-                                                <div class="mb-3">
-                                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                                        <label class="form-label mb-0">Preview:</label>
-                                                        <button type="button" class="btn btn-outline-secondary btn-sm" 
-                                                                th:onclick="'toggleReplyPreview(' + ${comment.id} + ')'">
-                                                            <i class="fas fa-eye me-1"></i>Toggle Preview
-                                                        </button>
-                                                    </div>
-                                                    <div th:id="'reply-preview-' + ${comment.id}" class="border rounded p-3 bg-light reply-preview" 
-                                                         style="display: block; min-height: 60px;">
-                                                        <em class="text-muted">Preview will appear here...</em>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="d-flex gap-2">
-                                                    <button type="submit" class="btn btn-primary btn-sm">
-                                                        <i class="fas fa-paper-plane me-1"></i>Post Reply
-                                                    </button>
-                                                    <button type="button" class="btn btn-secondary btn-sm" 
-                                                            th:onclick="'toggleReplyForm(' + ${comment.id} + ')'">
-                                                        Cancel
-                                                    </button>
-                                                </div>
+                                    
+                                    <!-- Edit/Delete Actions (only for comment author) -->
+                                    <div th:if="${currentUser != null and comment.author.id == currentUser.id}">
+                                        <div class="btn-group btn-group-sm">
+                                            <a th:href="@{/post/{postId}/comment/{commentId}/edit(postId=${post.id}, commentId=${comment.id})}" 
+                                               class="btn btn-outline-secondary">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <form th:action="@{/post/{postId}/comment/{commentId}/delete(postId=${post.id}, commentId=${comment.id})}" 
+                                                  method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-outline-danger"
+                                                        onclick="return confirm('Are you sure you want to delete this comment?')">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
                                             </form>
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <!-- Nested Replies -->
-                                <div th:if="${!#lists.isEmpty(comment.replies)}" 
-                                     th:id="'replies-' + ${comment.id}" 
-                                     class="replies ms-4" 
-                                     style="display: none;">
-                                    <div th:each="reply : ${comment.replies}" class="reply-card card mb-2">
-                                        <div class="card-body">
-                                            <div class="comment-author">
-                                                <div class="comment-avatar">
-                                                    <img th:src="${reply.author.avatarUrl}" th:alt="${reply.author.username} + ' avatar'" 
-                                                         class="comment-avatar-img" onerror="this.src='/images/default-avatar.png'">
+                                <!-- Reply Form (initially hidden) -->
+                                <div th:id="|reply-form-${comment.id}|" class="reply-form mt-3" style="display: none;">
+                                    <form th:action="@{/post/{postId}/comment/{commentId}/reply(postId=${post.id}, commentId=${comment.id})}" method="post">
+                                        <!-- Reply Tabs for Write/Preview -->
+                                        <div class="mb-2">
+                                            <ul class="nav nav-tabs nav-tabs-sm" th:id="|reply-tabs-${comment.id}|" role="tablist">
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link active" th:id="|reply-write-tab-${comment.id}|" data-bs-toggle="tab" 
+                                                            th:data-bs-target="|#reply-write-pane-${comment.id}|" type="button" role="tab">
+                                                        <i class="fas fa-edit me-1"></i>Write
+                                                    </button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" th:id="|reply-preview-tab-${comment.id}|" data-bs-toggle="tab" 
+                                                            th:data-bs-target="|#reply-preview-pane-${comment.id}|" type="button" role="tab"
+                                                            th:onclick="|updateReplyPreview(${comment.id})|">
+                                                        <i class="fas fa-eye me-1"></i>Preview
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                            <div class="tab-content" th:id="|reply-tab-content-${comment.id}|">
+                                                <div class="tab-pane fade show active" th:id="|reply-write-pane-${comment.id}|" role="tabpanel">
+                                                    <textarea class="form-control form-control-sm reply-textarea" name="content" rows="2" 
+                                                              th:id="|reply-content-${comment.id}|"
+                                                              placeholder="Write a reply... (Markdown supported)" 
+                                                              maxlength="500" required style="border-top: none; border-radius: 0 0 0.375rem 0.375rem;"></textarea>
+                                                    <div class="form-text">
+                                                        Max 500 characters. <a href="/markdown-guide" target="_blank">Markdown</a> supported.
+                                                    </div>
                                                 </div>
-                                                <div class="flex-grow-1">
-                                                    <div class="d-flex justify-content-between align-items-start">
-                                                        <div>
-                                                            <a th:href="@{'/personal/user/' + ${reply.author.username}}" 
-                                                               class="user-link" th:text="${reply.author.username}">Replier</a>
-                                                            <small class="text-muted ms-2">
-                                                                replied to <strong th:text="${comment.author.username}">Original</strong>
-                                                            </small>
-                                                            <br>
-                                                            <small class="post-time">
-                                                                <i class="fas fa-clock me-1"></i>
-                                                                <span th:text="${#temporals.format(reply.createdAt, 'MMM dd, yyyy HH:mm')}">Date</span>
-                                                            </small>
-                                                        </div>
-                                                        <div th:if="${currentUser.id == reply.author.id}">
-                                                            <form th:action="@{'/personal/comment/' + ${reply.id} + '/delete'}" method="post" class="d-inline"
-                                                                  onsubmit="return confirm('Are you sure you want to delete this reply?')">
-                                                                <button type="submit" class="btn btn-outline-danger btn-sm">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
-                                                            </form>
+                                                <div class="tab-pane fade" th:id="|reply-preview-pane-${comment.id}|" role="tabpanel">
+                                                    <div class="card" style="border-top: none; border-radius: 0 0 0.375rem 0.375rem; min-height: 80px;">
+                                                        <div class="card-body py-2">
+                                                            <div th:id="|reply-preview-${comment.id}|" class="comment-content" style="font-size: 0.9rem;">
+                                                                <p class="text-muted"><em>Start writing to see your preview...</em></p>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="card-text comment-content mt-2" th:utext="${@markdownUtil.toHtml(reply.content)}">Reply content</div>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" 
+                                                    th:onclick="|toggleReplyForm('reply-form-${comment.id}')|">
+                                                Cancel
+                                            </button>
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-reply me-1"></i>Reply
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <!-- Display Replies -->
+                            <div th:if="${!comment.replies.empty}" class="replies mt-3">
+                                <div th:each="reply : ${comment.replies}" class="reply-card card mb-2">
+                                    <div class="card-body py-2">
+                                        <div class="comment-author mb-2">
+                                            <div class="comment-avatar" style="width: 28px; height: 28px; font-size: 0.7rem;">
+                                                <span th:if="${reply.author.avatarUrl == null or reply.author.avatarUrl.isEmpty()}" 
+                                                      th:text="${reply.author.username.substring(0,1).toUpperCase()}">A</span>
+                                                <img th:if="${reply.author.avatarUrl != null and !reply.author.avatarUrl.isEmpty()}" 
+                                                     th:src="${reply.author.avatarUrl}" 
+                                                     th:alt="|${reply.author.username} avatar|" 
+                                                     class="comment-avatar-img"
+                                                     onerror="this.style.display='none'; this.parentElement.innerHTML='<span>' + this.alt.charAt(0).toUpperCase() + '</span>';">
+                                            </div>
+                                            <div>
+                                                <a th:href="@{/user/{username}(username=${reply.author.username})}" class="user-link">
+                                                    <span th:text="${reply.author.username}">Author</span>
+                                                </a>
+                                                <div class="post-time" style="font-size: 0.8rem;">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    <span th:text="${#temporals.format(reply.createdAt, 'MMM dd, HH:mm')}">Date and time</span>
+                                                    <span th:if="${reply.updatedAt != null and !reply.updatedAt.equals(reply.createdAt)}">
+                                                        (edited)
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="comment-content" th:utext="${reply.getHtmlContent()}" style="font-size: 0.9rem;">
+                                            Reply content will be rendered here
+                                        </div>
+                                        
+                                        <!-- Reply Actions (only for reply author) -->
+                                        <div th:if="${currentUser != null and reply.author.id == currentUser.id}" class="text-end mt-2">
+                                            <div class="btn-group btn-group-sm">
+                                                <a th:href="@{/post/{postId}/comment/{commentId}/edit(postId=${post.id}, commentId=${reply.id})}" 
+                                                   class="btn btn-outline-secondary btn-sm">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </a>
+                                                <form th:action="@{/post/{postId}/comment/{commentId}/delete(postId=${post.id}, commentId=${reply.id})}" 
+                                                      method="post" class="d-inline">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm"
+                                                            onclick="return confirm('Are you sure you want to delete this reply?')">
+                                                        <i class="fas fa-trash"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -682,168 +757,191 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Back to Feed Button -->
-                <div class="text-center mt-4">
-                    <a href="/personal/feed" class="btn btn-outline-primary">
-                        <i class="fas fa-arrow-left me-2"></i>Back to Community Feed
-                    </a>
+        <!-- Related Posts or Navigation -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-arrow-left fa-2x text-primary mb-3"></i>
+                        <h5>Continue Reading</h5>
+                        <p class="text-muted">Explore more posts from the community</p>
+                        <a href="/personal/feed" class="btn btn-primary">
+                            <i class="fas fa-rss me-2"></i>Back to Feed
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user fa-2x text-success mb-3"></i>
+                        <h5>Author's Profile</h5>
+                        <p class="text-muted">See more posts by <span th:text="${post.author.username}">this author</span></p>
+                        <a th:href="@{/user/{username}(username=${post.author.username})}" class="btn btn-success">
+                            <i class="fas fa-user me-2"></i>View Profile
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Use common scripts -->
+    <div th:replace="~{layout :: scripts}"></div>
+    
     <script>
-        // Comment Markdown preview functionality
-        function toggleCommentPreview() {
-            const preview = document.getElementById('commentMarkdownPreview');
-            const textarea = document.getElementById('commentContent');
+        function toggleLike(button) {
+            const postId = button.getAttribute('data-post-id');
+            const likeCount = button.querySelector('span');
+            const heartIcon = button.querySelector('i');
             
-            if (preview.style.display === 'none') {
-                const markdownText = textarea.value;
-                if (markdownText.trim()) {
-                    try {
-                        preview.innerHTML = marked.parse(markdownText);
-                    } catch (e) {
-                        preview.innerHTML = '<em class="text-danger">Error rendering preview</em>';
-                    }
+            fetch(`/api/post/${postId}/like`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                likeCount.textContent = data.likeCount;
+                if (data.liked) {
+                    button.classList.add('liked');
+                    heartIcon.classList.remove('far');
+                    heartIcon.classList.add('fas');
                 } else {
-                    preview.innerHTML = '<em class="text-muted">Preview will appear here...</em>';
+                    button.classList.remove('liked');
+                    heartIcon.classList.remove('fas');
+                    heartIcon.classList.add('far');
                 }
-                preview.style.display = 'block';
-            } else {
-                preview.style.display = 'none';
-            }
+            })
+            .catch(error => {
+                console.error('Error toggling like:', error);
+            });
         }
-        
-        // Auto-update comment preview on typing (debounced)
-        let commentPreviewTimeout;
-        document.getElementById('commentContent').addEventListener('input', function() {
-            const preview = document.getElementById('commentMarkdownPreview');
-            if (preview.style.display !== 'none') {
-                clearTimeout(commentPreviewTimeout);
-                commentPreviewTimeout = setTimeout(() => {
-                    const markdownText = this.value;
-                    if (markdownText.trim()) {
-                        try {
-                            preview.innerHTML = marked.parse(markdownText);
-                        } catch (e) {
-                            preview.innerHTML = '<em class="text-danger">Error rendering preview</em>';
-                        }
-                    } else {
-                        preview.innerHTML = '<em class="text-muted">Preview will appear here...</em>';
-                    }
-                }, 300);
-            }
-        });
 
-        // Initialize comment preview on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const textarea = document.getElementById('commentContent');
-            const preview = document.getElementById('commentMarkdownPreview');
-            
-            // Update preview immediately if there's content
-            if (textarea.value.trim()) {
-                try {
-                    preview.innerHTML = marked.parse(textarea.value);
-                } catch (e) {
-                    preview.innerHTML = '<em class="text-danger">Error rendering preview</em>';
-                }
-            }
-        });
-
-        // Reply form functionality
-        function toggleReplyForm(commentId) {
-            const replyForm = document.getElementById('reply-form-' + commentId);
-            if (replyForm.style.display === 'none') {
-                replyForm.style.display = 'block';
+        // Toggle reply form visibility
+        function toggleReplyForm(formId) {
+            const form = document.getElementById(formId);
+            if (form.style.display === 'none' || form.style.display === '') {
+                form.style.display = 'block';
                 // Focus on the textarea
-                const textarea = replyForm.querySelector('.reply-textarea');
+                const textarea = form.querySelector('textarea');
                 if (textarea) {
                     textarea.focus();
                 }
             } else {
-                replyForm.style.display = 'none';
-                // Clear the form
-                const textarea = replyForm.querySelector('.reply-textarea');
+                form.style.display = 'none';
+                // Clear the textarea
+                const textarea = form.querySelector('textarea');
                 if (textarea) {
                     textarea.value = '';
                 }
-                // Clear preview
-                const preview = document.getElementById('reply-preview-' + commentId);
-                if (preview) {
-                    preview.innerHTML = '<em class="text-muted">Preview will appear here...</em>';
-                }
             }
         }
 
-        // Toggle replies visibility
-        function toggleReplies(commentId) {
-            const repliesDiv = document.getElementById('replies-' + commentId);
-            const toggleBtn = document.getElementById('toggle-replies-btn-' + commentId);
+        // Markdown to HTML conversion function
+        function convertMarkdownToHtml(markdown) {
+            if (!markdown || markdown.trim() === '') {
+                return '<p class="text-muted"><em>Start writing to see your preview...</em></p>';
+            }
             
-            if (repliesDiv.style.display === 'none') {
-                // Show replies
-                repliesDiv.style.display = 'block';
-                toggleBtn.innerHTML = '<i class="fas fa-chevron-up me-1"></i>Hide replies';
-            } else {
-                // Hide replies
-                repliesDiv.style.display = 'none';
-                toggleBtn.innerHTML = '<i class="fas fa-chevron-down me-1"></i>Show replies';
-            }
-        }
-
-        // Reply preview functionality
-        function toggleReplyPreview(commentId) {
-            const preview = document.getElementById('reply-preview-' + commentId);
-            const textarea = document.querySelector('#reply-form-' + commentId + ' .reply-textarea');
+            let html = markdown
+                // Headers
+                .replace(/^### (.*?)$/gm, '<h3>$1</h3>')
+                .replace(/^## (.*?)$/gm, '<h2>$1</h2>')
+                .replace(/^# (.*?)$/gm, '<h1>$1</h1>')
+                // Bold and italic
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                // Strikethrough
+                .replace(/~~(.*?)~~/g, '<del>$1</del>')
+                // Code blocks (must come before inline code)
+                .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+                // Inline code
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                // Links
+                .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')
+                // Blockquotes
+                .replace(/^> (.*?)$/gm, '<blockquote>$1</blockquote>')
+                // Horizontal rules
+                .replace(/^---$/gm, '<hr>')
+                // Lists (basic implementation)
+                .replace(/^\* (.*?)$/gm, '<li>$1</li>')
+                .replace(/^- (.*?)$/gm, '<li>$1</li>')
+                .replace(/^\d+\. (.*?)$/gm, '<li>$1</li>')
+                // Line breaks
+                .replace(/\n/g, '<br>');
             
-            if (preview.style.display === 'none') {
-                const markdownText = textarea.value;
-                if (markdownText.trim()) {
-                    try {
-                        preview.innerHTML = marked.parse(markdownText);
-                    } catch (e) {
-                        preview.innerHTML = '<em class="text-danger">Error rendering preview</em>';
-                    }
-                } else {
-                    preview.innerHTML = '<em class="text-muted">Preview will appear here...</em>';
-                }
-                preview.style.display = 'block';
-            } else {
-                preview.style.display = 'none';
-            }
-        }
-
-        // Auto-update reply previews on typing (debounced)
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add event listeners to all reply textareas
-            document.addEventListener('input', function(e) {
-                if (e.target.classList.contains('reply-textarea')) {
-                    const textarea = e.target;
-                    const form = textarea.closest('.reply-form');
-                    const commentId = form.id.replace('reply-form-', '');
-                    const preview = document.getElementById('reply-preview-' + commentId);
-                    
-                    if (preview && preview.style.display !== 'none') {
-                        clearTimeout(textarea.replyPreviewTimeout);
-                        textarea.replyPreviewTimeout = setTimeout(() => {
-                            const markdownText = textarea.value;
-                            if (markdownText.trim()) {
-                                try {
-                                    preview.innerHTML = marked.parse(markdownText);
-                                } catch (e) {
-                                    preview.innerHTML = '<em class="text-danger">Error rendering preview</em>';
-                                }
-                            } else {
-                                preview.innerHTML = '<em class="text-muted">Preview will appear here...</em>';
-                            }
-                        }, 300);
-                    }
-                }
+            // Wrap consecutive <li> elements in <ul>
+            html = html.replace(/(<li>.*?<\/li>)(<br>)*(?=<li>|$)/g, function(match, li) {
+                return li;
             });
+            html = html.replace(/(<li>.*?<\/li>(<br>)*)+/g, '<ul>$&</ul>');
+            html = html.replace(/<br><\/ul>/g, '</ul>');
+            html = html.replace(/<ul><br>/g, '<ul>');
+            
+            return html;
+        }
+
+        // Update comment preview
+        function updateCommentPreview() {
+            const content = document.getElementById('commentContent').value;
+            document.getElementById('commentMarkdownPreview').innerHTML = convertMarkdownToHtml(content);
+        }
+
+        // Character counter for comment
+        document.querySelector('textarea[name="content"]').addEventListener('input', function() {
+            const maxLength = 1000;
+            const currentLength = this.value.length;
+            const helpText = this.nextElementSibling;
+            const originalText = helpText.innerHTML.split('.')[0] + '.';
+            helpText.innerHTML = `${originalText} Max ${maxLength} characters (${currentLength}/${maxLength})`;
+            
+            if (currentLength > maxLength * 0.8) {
+                helpText.classList.add('text-warning');
+            } else {
+                helpText.classList.remove('text-warning');
+            }
+        });
+
+        // Real-time comment preview updates
+        document.getElementById('commentContent').addEventListener('input', function() {
+            if (document.getElementById('comment-preview-tab').classList.contains('active')) {
+                updateCommentPreview();
+            }
+        });
+
+        // Update reply preview
+        function updateReplyPreview(commentId) {
+            const content = document.getElementById(`reply-content-${commentId}`).value;
+            document.getElementById(`reply-preview-${commentId}`).innerHTML = convertMarkdownToHtml(content);
+        }
+
+        // Character counter for reply forms
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('.reply-textarea')) {
+                const maxLength = 500;
+                const currentLength = e.target.value.length;
+                const helpText = e.target.parentElement.querySelector('.form-text');
+                const originalText = helpText.innerHTML.split('.')[0] + '.';
+                helpText.innerHTML = `${originalText} Max ${maxLength} characters (${currentLength}/${maxLength})`;
+                
+                if (currentLength > maxLength * 0.8) {
+                    helpText.classList.add('text-warning');
+                } else {
+                    helpText.classList.remove('text-warning');
+                }
+
+                // Update preview if preview tab is active
+                const commentId = e.target.id.split('-').pop();
+                const previewTab = document.getElementById(`reply-preview-tab-${commentId}`);
+                if (previewTab && previewTab.classList.contains('active')) {
+                    updateReplyPreview(commentId);
+                }
+            }
         });
     </script>
 </body>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Join ' + ${group.name} + ' - Spring Auth App'">Join Group - Spring Auth App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .group-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 30px;
+            text-align: center;
+        }
+        .group-details {
+            padding: 30px;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            padding: 15px 40px;
+            font-size: 1.1em;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #764ba2, #667eea);
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            border-radius: 25px;
+            padding: 15px 40px;
+            font-size: 1.1em;
+        }
+        .info-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .member-preview {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        .member-name {
+            font-weight: 500;
+        }
+        .member-role {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-left: 10px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-item {
+            text-align: center;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #f8f9fa;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        .preview-messages {
+            max-height: 300px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        .preview-message {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .message-author {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        .message-content {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .message-time {
+            font-size: 0.8em;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <!-- Use common header -->
+    <div th:replace="~{layout :: header}"></div>
+
+    <!-- Use common alerts -->
+    <div th:replace="~{layout :: alerts}"></div>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="card">
+                    <div class="group-header">
+                        <div class="mb-3">
+                            <i class="fas fa-users fa-3x"></i>
+                        </div>
+                        <h1 th:text="${group.name}">Group Name</h1>
+                        <p class="mb-0" th:text="${group.description ?: 'No description available'}">Group description</p>
+                        <div class="mt-3">
+                            <span class="badge bg-success fs-6 me-2">
+                                <i class="fas fa-globe"></i> Public Group
+                            </span>
+                            <span class="badge bg-light text-dark fs-6">
+                                <i class="fas fa-user"></i> Created by <span th:text="${group.creator.username}">Creator</span>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="group-details">
+                        <!-- Group Statistics -->
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number" th:text="${memberCount}">0</div>
+                                <div class="stat-label">Members</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" th:text="${messageCount}">0</div>
+                                <div class="stat-label">Messages</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" th:text="${#strings.capitalize(#temporals.format(group.createdAt, 'MMM yyyy'))}">Date</div>
+                                <div class="stat-label">Created</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" th:text="${group.lastActivityAt != null ? #strings.capitalize(#temporals.format(group.lastActivityAt, 'MMM dd')) : 'N/A'}">Date</div>  
+                                <div class="stat-label">Last Activity</div>
+                            </div>
+                        </div>
+
+                        <!-- Member Preview -->
+                        <div class="info-item">
+                            <h5 class="mb-3">
+                                <i class="fas fa-users text-primary"></i> Members
+                                <span class="badge bg-primary ms-2" th:text="${memberCount}">0</span>
+                            </h5>
+                            <div th:if="${members.empty}" class="text-muted">
+                                <i class="fas fa-user-plus"></i> Be the first member to join this group!
+                            </div>
+                            <div th:each="member : ${members}" class="member-preview">
+                                <div class="member-avatar" th:text="${member.user.username.substring(0,1).toUpperCase()}">A</div>
+                                <div>
+                                    <div class="member-name" th:text="${member.user.username}">Username</div>
+                                    <span class="member-role">
+                                        <span th:if="${member.role.name() == 'ADMIN'}" class="text-danger">
+                                            <i class="fas fa-crown"></i> Admin
+                                        </span>
+                                        <span th:if="${member.role.name() == 'MODERATOR'}" class="text-warning">
+                                            <i class="fas fa-shield-alt"></i> Moderator
+                                        </span>
+                                        <span th:if="${member.role.name() == 'MEMBER'}" class="text-muted">
+                                            <i class="fas fa-user"></i> Member
+                                        </span>
+                                        • Joined <span th:text="${#temporals.format(member.joinedAt, 'MMM dd')}">Date</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Messages Preview -->
+                        <div class="info-item" th:if="${!recentMessages.empty}">
+                            <h5 class="mb-3">
+                                <i class="fas fa-comments text-primary"></i> Recent Conversations
+                            </h5>
+                            <div class="preview-messages">
+                                <div th:each="message : ${recentMessages}" class="preview-message">
+                                    <div class="message-author" th:text="${message.sender.username}">Author</div>
+                                    <div class="message-content" th:text="${message.content}">Message content</div>
+                                    <div class="message-time" th:text="${#temporals.format(message.createdAt, 'MMM dd, HH:mm')}">Time</div>
+                                </div>
+                            </div>
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle"></i> 
+                                This is a preview of recent messages. Join to see full conversation history.
+                            </small>
+                        </div>
+
+                        <!-- Group Rules/Info -->
+                        <div class="info-item">
+                            <h5 class="mb-3">
+                                <i class="fas fa-info-circle text-primary"></i> About This Group
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success"></i> Public group - anyone can join</li>
+                                        <li><i class="fas fa-comments text-primary"></i> Real-time group messaging</li>
+                                        <li><i class="fas fa-users text-info"></i> Community discussions</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-clock text-warning"></i> 24/7 availability</li>
+                                        <li><i class="fas fa-shield text-secondary"></i> Moderated content</li>
+                                        <li><i class="fas fa-heart text-danger"></i> Friendly community</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Join Actions -->
+                        <div class="text-center">
+                            <div class="mb-4">
+                                <h4 class="text-primary">Ready to join the conversation?</h4>
+                                <p class="text-muted">Join this group to start chatting with other members and participate in discussions.</p>
+                            </div>
+                            
+                            <div class="d-grid gap-3 d-md-block">
+                                <form th:action="@{/groups/{id}/join(id=${group.id})}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-primary btn-lg me-md-3">
+                                        <i class="fas fa-sign-in-alt"></i> Join Group
+                                    </button>
+                                </form>
+                                <a href="/groups/discover" class="btn btn-secondary btn-lg">
+                                    <i class="fas fa-arrow-left"></i> Back to Discovery
+                                </a>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle"></i>
+                                    By joining this group, you agree to follow community guidelines and be respectful to other members.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Actions -->
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-share-alt fa-2x text-primary mb-3"></i>
+                                <h5>Share This Group</h5>
+                                <p class="text-muted mb-3">Invite your friends to join this group</p>
+                                <button class="btn btn-outline-primary" onclick="shareGroup()">
+                                    <i class="fas fa-copy"></i> Copy Invite Link
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-plus fa-2x text-success mb-3"></i>
+                                <h5>Create Your Own</h5>
+                                <p class="text-muted mb-3">Start your own group with your interests</p>
+                                <a href="/groups/create" class="btn btn-outline-success">
+                                    <i class="fas fa-plus"></i> Create Group
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Use common scripts -->
+    <div th:replace="~{layout :: scripts}"></div>
+    
+    <script>
+        function shareGroup() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(function() {
+                // Show success message
+                const btn = event.target;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                btn.classList.remove('btn-outline-primary');
+                btn.classList.add('btn-success');
+                
+                setTimeout(function() {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-outline-primary');
+                }, 2000);
+            }).catch(function(err) {
+                alert('Could not copy link: ' + err);
+            });
+        }
+    </script>
+</body>
+</html> 
