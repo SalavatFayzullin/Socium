@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed - Spring Auth App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 30px;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .feed-header {
+            text-align: center;
+            padding: 40px 0;
+            color: white;
+        }
+        .feed-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+        .feed-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .post-card {
+            border-left: 4px solid #667eea;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+        .post-card:hover {
+            transform: translateY(-2px);
+        }
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .post-author {
+            display: flex;
+            align-items: center;
+        }
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 10px;
+        }
+        .post-time {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        .pagination-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .user-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .user-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        /* Markdown Content Styling */
+        .post-content {
+            line-height: 1.6;
+        }
+        .post-content h1, .post-content h2, .post-content h3, 
+        .post-content h4, .post-content h5, .post-content h6 {
+            color: #333;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .post-content h1 { font-size: 1.5rem; }
+        .post-content h2 { font-size: 1.3rem; }
+        .post-content h3 { font-size: 1.1rem; }
+        .post-content p {
+            margin-bottom: 1rem;
+        }
+        .post-content code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+        .post-content pre {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+        }
+        .post-content pre code {
+            background: none;
+            padding: 0;
+            color: #333;
+        }
+        .post-content blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: #6c757d;
+            font-style: italic;
+        }
+        .post-content a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .post-content a:hover {
+            text-decoration: underline;
+        }
+        .post-content ul, .post-content ol {
+            padding-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        .post-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        .post-content th, .post-content td {
+            border: 1px solid #dee2e6;
+            padding: 0.5rem;
+            text-align: left;
+        }
+        .post-content th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        .post-content hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            margin: 2rem 0;
+        }
+        .navbar-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-shield-alt me-2"></i>Spring Auth App
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3">
+                    <img th:src="${user.avatarUrl}" th:alt="${user.username} + ' avatar'" 
+                         class="navbar-avatar me-2" onerror="this.src='/images/default-avatar.png'">
+                    Welcome, <span th:text="${username}" class="fw-bold"></span>!
+                </span>
+                <a class="nav-link active" href="/personal/feed">
+                    <i class="fas fa-rss me-1"></i>Feed
+                </a>
+                <a class="nav-link" href="/chat">
+                    <i class="fas fa-comments me-1"></i>Chat
+                </a>
+                <a class="nav-link" href="/personal">
+                    <i class="fas fa-user me-1"></i>My Profile
+                </a>
+                <form class="d-inline" th:action="@{/logout}" method="post">
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fas fa-sign-out-alt me-1"></i>Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Feed Header -->
+    <div class="feed-header">
+        <div class="container">
+            <h1 class="feed-title">
+                <i class="fas fa-rss me-3"></i>Community Feed
+            </h1>
+            <p class="feed-subtitle">
+                Discover what everyone is sharing
+            </p>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <!-- Posts Feed -->
+                <div th:if="${posts.hasContent()}">
+                    <div th:each="post : ${posts.content}" class="post-card card mb-3">
+                        <div class="card-body">
+                            <div class="post-header">
+                                <div class="post-author">
+                                    <div class="post-avatar">
+                                        <img th:src="${post.author.avatarUrl}" th:alt="${post.author.username} + ' avatar'" 
+                                             class="avatar-img" onerror="this.src='/images/default-avatar.png'">
+                                    </div>
+                                    <div>
+                                        <a th:href="@{'/personal/user/' + ${post.author.username}}" 
+                                           class="user-link" th:text="${post.author.username}">Author</a>
+                                        <br>
+                                        <small class="post-time">
+                                            <i class="fas fa-clock me-1"></i>
+                                            <span th:text="${#temporals.format(post.createdAt, 'MMM dd, yyyy HH:mm')}">Date</span>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-text post-content" th:utext="${@markdownUtil.toHtml(post.content)}">Post content</div>
+                            
+                            <!-- Post Actions -->
+                            <div class="post-actions mt-3 pt-3 border-top">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="post-stats">
+                                        <span class="text-muted me-3">
+                                            <i class="far fa-heart me-1"></i>
+                                            <span th:text="${post.likeCount}">0</span> likes
+                                        </span>
+                                        <span class="text-muted">
+                                            <i class="far fa-comments me-1"></i>
+                                            <span th:text="${post.commentCount}">0</span> comments
+                                        </span>
+                                    </div>
+                                    <a th:href="@{'/personal/post/' + ${post.id}}" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-eye me-1"></i>View Post
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination-wrapper" th:if="${posts.totalPages > 1}">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled' : ''">
+                                    <a class="page-link" th:href="@{/personal/feed(page=${currentPage - 1})}">&laquo; Previous</a>
+                                </li>
+                                
+                                <li th:each="i : ${#numbers.sequence(0, posts.totalPages - 1)}" 
+                                    class="page-item" th:classappend="${i == currentPage} ? 'active' : ''">
+                                    <a class="page-link" th:href="@{/personal/feed(page=${i})}" th:text="${i + 1}">1</a>
+                                </li>
+                                
+                                <li class="page-item" th:classappend="${currentPage >= posts.totalPages - 1} ? 'disabled' : ''">
+                                    <a class="page-link" th:href="@{/personal/feed(page=${currentPage + 1})}">Next &raquo;</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- No Posts Message -->
+                <div th:unless="${posts.hasContent()}" class="card text-center">
+                    <div class="card-body py-5">
+                        <i class="fas fa-newspaper fa-5x text-muted mb-4"></i>
+                        <h3 class="text-muted">No Posts Yet</h3>
+                        <p class="text-muted mb-4">Be the first to share something with the community!</p>
+                        <a href="/personal" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Create Your First Post
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
