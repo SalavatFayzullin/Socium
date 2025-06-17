@@ -6,6 +6,7 @@
     <title>Discover Groups - Spring Auth App</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -203,7 +204,7 @@
                                     </small>
                                     <small class="text-muted ms-3">
                                         <i class="fas fa-user"></i> 
-                                        Created by <span th:text="${group.creator.username}">Creator</span>
+                                        Created by <span th:text="${group.createdBy.username}">Creator</span>
                                     </small>
                                 </div>
                                 

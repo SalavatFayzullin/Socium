@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class DatabaseInitializationService implements CommandLineRunner {
@@ -27,6 +29,9 @@ public class DatabaseInitializationService implements CommandLineRunner {
         
         // Create uploads directory for avatar files
         createUploadsDirectory();
+        
+        // Update existing users with createdAt field
+        updateExistingUsersCreatedAt();
         
         // Print database information
         printDatabaseInfo();
@@ -57,6 +62,32 @@ public class DatabaseInitializationService implements CommandLineRunner {
             }
         } catch (Exception e) {
             System.err.println("✗ Error creating uploads directory: " + e.getMessage());
+        }
+    }
+
+    private void updateExistingUsersCreatedAt() {
+        try {
+            List<User> usersWithoutCreatedAt = userRepository.findAll().stream()
+                .filter(user -> user.getCreatedAt() == null)
+                .toList();
+            
+            if (!usersWithoutCreatedAt.isEmpty()) {
+                System.out.println("✓ Updating " + usersWithoutCreatedAt.size() + " existing users with createdAt field...");
+                
+                // Set a default creation date for existing users (current time)
+                LocalDateTime defaultCreatedAt = LocalDateTime.now();
+                
+                for (User user : usersWithoutCreatedAt) {
+                    user.setCreatedAt(defaultCreatedAt);
+                    userRepository.save(user);
+                }
+                
+                System.out.println("✓ Successfully updated existing users with createdAt field");
+            } else {
+                System.out.println("✓ All users already have createdAt field");
+            }
+        } catch (Exception e) {
+            System.err.println("✗ Error updating existing users: " + e.getMessage());
         }
     }
 

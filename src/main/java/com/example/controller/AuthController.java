@@ -58,23 +58,5 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/dashboard")
-    public String dashboard(Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Optional<User> userOpt = userService.findByUsername(auth.getName());
-        
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            long postCount = postService.getPostCountByUser(user);
-            
-            model.addAttribute("username", auth.getName());
-            model.addAttribute("user", user);
-            model.addAttribute("postCount", postCount);
-        } else {
-            model.addAttribute("username", auth.getName());
-            model.addAttribute("postCount", 0);
-        }
-        
-        return "dashboard";
-    }
+
 } 

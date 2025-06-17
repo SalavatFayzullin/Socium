@@ -6,6 +6,7 @@
     <title th:text="'Chat with ' + ${otherUser.username}">Chat</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -166,6 +167,7 @@
         let lastMessageTime = null;
         let isPolling = false;
         let pollTimeout = null;
+        let displayedMessageIds = new Set();
 
         // Auto-scroll to bottom
         function scrollToBottom() {
@@ -176,36 +178,47 @@
         // Load new messages
         function loadNewMessages() {
             const chatId = window.location.pathname.split('/chat/')[1].split('/')[0];
-            const url = `/api/chat/${chatId}/messages/updates${lastMessageTime ? '?since=' + encodeURIComponent(lastMessageTime) : ''}`;
+            const url = `/api/chat/${chatId}/messages/latest${lastMessageTime ? '?lastMessageTime=' + encodeURIComponent(lastMessageTime) : ''}`;
             
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     if (data.messages && data.messages.length > 0) {
                         data.messages.forEach(message => {
-                            addMessageToChat(message);
-                            lastMessageTime = message.createdAt;
+                            // Only add if not already displayed
+                            if (!displayedMessageIds.has(message.id)) {
+                                addMessageToChat(message);
+                                displayedMessageIds.add(message.id);
+                                lastMessageTime = message.createdAt;
+                            }
                         });
                         scrollToBottom();
+                        showConnectionStatus('Connected', 'success');
                     }
                 })
                 .catch(error => {
                     console.error('Error loading new messages:', error);
                     showConnectionStatus('Connection error', 'danger');
+                    // Retry after a longer delay on error
+                    if (isPolling) {
+                        setTimeout(() => {
+                            if (isPolling) loadNewMessages();
+                        }, 5000);
+                    }
                 });
         }
 
         // Add message to chat
         function addMessageToChat(message) {
             const chatContainer = document.getElementById('chatContainer');
-            const isOwn = message.senderId === parseInt(document.body.dataset.currentUserId || '0');
+            const isOwn = message.isOwn || false;
             
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isOwn ? 'own' : ''}`;
             
             const avatarImg = document.createElement('img');
-            avatarImg.src = message.senderAvatar || '/images/default-avatar.png';
-            avatarImg.alt = message.senderUsername + ' avatar';
+            avatarImg.src = message.sender.avatarUrl || '/images/default-avatar.png';
+            avatarImg.alt = message.sender.username + ' avatar';
             avatarImg.className = 'message-avatar';
             avatarImg.onerror = function() { this.src = '/images/default-avatar.png'; };
             
@@ -279,14 +292,22 @@
         window.addEventListener('load', function() {
             scrollToBottom();
             
+            // Initialize displayed message IDs from existing messages
+            const existingMessages = document.querySelectorAll('.message');
+            existingMessages.forEach((messageElement, index) => {
+                // Use a temporary ID based on content and position for existing messages
+                const content = messageElement.querySelector('.message-content div')?.textContent || '';
+                const tempId = `existing_${index}_${content.substring(0, 20)}`;
+                displayedMessageIds.add(tempId);
+            });
+            
             // Set last message time from existing messages
             const messages = document.querySelectorAll('.message');
             if (messages.length > 0) {
-                const lastMessage = messages[messages.length - 1];
-                const timeElement = lastMessage.querySelector('.message-time');
-                if (timeElement) {
-                    lastMessageTime = timeElement.getAttribute('data-time') || new Date().toISOString();
-                }
+                // Get the current time as baseline for new messages
+                lastMessageTime = new Date().toISOString();
+            } else {
+                lastMessageTime = new Date().toISOString();
             }
             
             startPolling();

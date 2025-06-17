@@ -110,7 +110,7 @@ public class ChatController {
     }
 
     @GetMapping("/search")
-    public String searchUsers(@RequestParam(value = "q", required = false) String query, Model model) {
+    public String searchUsers(@RequestParam(value = "query", required = false) String query, Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Optional<User> userOpt = userService.findByUsername(auth.getName());
         
@@ -124,7 +124,7 @@ public class ChatController {
                 List<User> searchResults = userService.searchUsersByUsername(query);
                 // Remove current user from search results
                 searchResults.removeIf(user -> user.getId().equals(currentUser.getId()));
-                model.addAttribute("searchResults", searchResults);
+                model.addAttribute("users", searchResults);
                 model.addAttribute("query", query);
             }
         }

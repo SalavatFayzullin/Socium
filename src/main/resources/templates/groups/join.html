@@ -6,6 +6,7 @@
     <title th:text="'Join ' + ${group.name} + ' - Spring Auth App'">Join Group - Spring Auth App</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -64,6 +65,17 @@
             color: white;
             font-weight: bold;
             margin-right: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        .member-avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
         .member-name {
             font-weight: 500;
@@ -147,7 +159,7 @@
                                 <i class="fas fa-globe"></i> Public Group
                             </span>
                             <span class="badge bg-light text-dark fs-6">
-                                <i class="fas fa-user"></i> Created by <span th:text="${group.creator.username}">Creator</span>
+                                <i class="fas fa-user"></i> Created by <span th:text="${group.createdBy.username}">Creator</span>
                             </span>
                         </div>
                     </div>
@@ -183,7 +195,15 @@
                                 <i class="fas fa-user-plus"></i> Be the first member to join this group!
                             </div>
                             <div th:each="member : ${members}" class="member-preview">
-                                <div class="member-avatar" th:text="${member.user.username.substring(0,1).toUpperCase()}">A</div>
+                                <div class="member-avatar">
+                                    <span th:if="${member.user.avatarUrl == null or member.user.avatarUrl.isEmpty()}" 
+                                          th:text="${member.user.username.substring(0,1).toUpperCase()}">A</span>
+                                    <img th:if="${member.user.avatarUrl != null and !member.user.avatarUrl.isEmpty()}" 
+                                         th:src="${member.user.avatarUrl}" 
+                                         th:alt="|${member.user.username} avatar|" 
+                                         class="member-avatar-img"
+                                         onerror="this.style.display='none'; this.parentElement.innerHTML='<span>' + this.getAttribute('alt').charAt(0).toUpperCase() + '</span>';">
+                                </div>
                                 <div>
                                     <div class="member-name" th:text="${member.user.username}">Username</div>
                                     <span class="member-role">
@@ -252,6 +272,7 @@
                             
                             <div class="d-grid gap-3 d-md-block">
                                 <form th:action="@{/groups/{id}/join(id=${group.id})}" method="post" class="d-inline">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                     <button type="submit" class="btn btn-primary btn-lg me-md-3">
                                         <i class="fas fa-sign-in-alt"></i> Join Group
                                     </button>

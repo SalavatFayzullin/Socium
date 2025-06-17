@@ -48,11 +48,11 @@ public class GroupMessageService {
     }
     
     public List<GroupMessage> getGroupMessages(Group group) {
-        return groupMessageRepository.findByGroupOrderByCreatedAtDesc(group);
+        return groupMessageRepository.findByGroupOrderByCreatedAtAsc(group);
     }
     
     public Page<GroupMessage> getGroupMessages(Group group, Pageable pageable) {
-        return groupMessageRepository.findByGroupOrderByCreatedAtDesc(group, pageable);
+        return groupMessageRepository.findByGroupOrderByCreatedAtAsc(group, pageable);
     }
     
     public List<GroupMessage> getRecentMessages(Group group, LocalDateTime since) {

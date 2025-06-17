@@ -20,6 +20,10 @@ public interface GroupMessageRepository extends JpaRepository<GroupMessage, Long
     
     Page<GroupMessage> findByGroupOrderByCreatedAtDesc(Group group, Pageable pageable);
     
+    List<GroupMessage> findByGroupOrderByCreatedAtAsc(Group group);
+    
+    Page<GroupMessage> findByGroupOrderByCreatedAtAsc(Group group, Pageable pageable);
+    
     List<GroupMessage> findBySender(User sender);
     
     @Query("SELECT gm FROM GroupMessage gm WHERE gm.group = :group AND gm.createdAt > :since ORDER BY gm.createdAt ASC")

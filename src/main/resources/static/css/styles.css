@@ -1,0 +1,68 @@
+/* Shared styles for Socium application
+--------------------------------------------------*/
+
+/* Global background + typography */
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Generic card styling */
+.card {
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Navigation bar */
+.navbar {
+    background: rgba(33, 37, 41, 0.95) !important;
+    backdrop-filter: blur(10px);
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+    min-height: 60px !important;
+}
+.navbar-brand {
+    color: #ffffff !important;
+}
+.nav-link {
+    color: rgba(255, 255, 255, 0.8) !important;
+    transition: color 0.3s ease;
+}
+.nav-link:hover,
+.nav-link.active {
+    color: #ffffff !important;
+}
+.navbar-text {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+.navbar .navbar-text {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+.navbar-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+}
+
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 25px;
+    padding: 10px 30px;
+}
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+.btn-danger {
+    border-radius: 20px;
+}
+
+/* Utility / helper rules can be moved here progressively */ 
