@@ -1,207 +1,207 @@
-# Spring Boot Authentication & Social Platform
+# Социальная платформа с аутентификацией на Spring Boot
 
-A complete social platform built with Spring Boot that demonstrates user authentication, personal profiles, status updates, and community posts with a modern, responsive frontend.
+Полноценная социальная платформа, построенная на Spring Boot, которая демонстрирует аутентификацию пользователей, личные профили, обновления статуса и посты сообщества с современным адаптивным интерфейсом.
 
-## Features
+## Функциональность
 
-### Authentication & Security
-- **User Registration**: Create new accounts with username, email, and password validation
-- **User Authentication**: Secure login system with Spring Security
-- **Password Encryption**: BCrypt password hashing for security
-- **Session Management**: Secure session handling
+### Аутентификация и безопасность
+- **Регистрация пользователей**: Создание новых аккаунтов с валидацией имени пользователя, email и пароля
+- **Аутентификация пользователей**: Безопасная система входа с Spring Security
+- **Шифрование паролей**: Хеширование паролей BCrypt для безопасности
+- **Управление сессиями**: Безопасная обработка сессий
 
-### Social Features
-- **Personal Profile**: Customizable user profile page
-- **Status Updates**: Set and update your current status (up to 200 characters)
-- **Post Creation**: Create and share posts with the community (up to 1000 characters)
-- **Community Feed**: View all posts from users in chronological order
-- **User Profiles**: View other users' profiles and their posts
-- **Post Management**: Edit and delete your own posts
+### Социальные функции
+- **Личный профиль**: Настраиваемая страница профиля пользователя
+- **Обновления статуса**: Установка и обновление текущего статуса (до 200 символов)
+- **Создание постов**: Создание и обмен постами с сообществом (до 1000 символов)
+- **Лента сообщества**: Просмотр всех постов пользователей в хронологическом порядке
+- **Профили пользователей**: Просмотр профилей других пользователей и их постов
+- **Управление постами**: Редактирование и удаление собственных постов
 
-### UI & Design
-- **Responsive Design**: Modern Bootstrap-based frontend with gradient design
-- **Interactive Elements**: Hover animations and smooth transitions
-- **Form Validation**: Client-side and server-side validation
-- **Real-time Updates**: Dynamic content loading and pagination
+### UI и дизайн
+- **Адаптивный дизайн**: Современный интерфейс на базе Bootstrap с градиентным дизайном
+- **Интерактивные элементы**: Анимации при наведении и плавные переходы
+- **Валидация форм**: Валидация на стороне клиента и сервера
+- **Обновления в реальном времени**: Динамическая загрузка контента и пагинация
 
-### Technical Features
-- **H2 Database**: In-memory database for development and testing
-- **JPA Relationships**: User-Post one-to-many relationships
-- **Pagination**: Efficient handling of large post lists
-- **Time Tracking**: Automatic timestamp creation for posts
+### Технические особенности
+- **База данных H2**: Встроенная база данных для разработки и тестирования
+- **JPA связи**: Отношения один-ко-многим между пользователями и постами
+- **Пагинация**: Эффективная обработка больших списков постов
+- **Отслеживание времени**: Автоматическое создание временных меток для постов
 
-## Technologies Used
+## Используемые технологии
 
 - **Backend**: Spring Boot 3.2.0, Spring Security, Spring Data JPA
 - **Frontend**: Thymeleaf, Bootstrap 5.1.3, Font Awesome 6.0.0
-- **Database**: H2 (in-memory)
-- **Build Tool**: Maven
-- **Java Version**: 17
+- **База данных**: H2 (в памяти)
+- **Инструмент сборки**: Maven
+- **Версия Java**: 17
 
-## Prerequisites
+## Требования
 
-- Java 17 or higher
-- Maven 3.6 or higher
+- Java 17 или выше
+- Maven 3.6 или выше
 
-## Getting Started
+## Начало работы
 
-### 1. Clone the repository
+### 1. Клонировать репозиторий
 ```bash
 git clone <repository-url>
 cd spring-auth-app
 ```
 
-### 2. Build the application
+### 2. Собрать приложение
 ```bash
 mvn clean install
 ```
 
-### 3. Run the application
+### 3. Запустить приложение
 ```bash
 mvn spring-boot:run
 ```
 
-Alternatively, you can run the JAR file:
+Альтернативно, можно запустить JAR файл:
 ```bash
 java -jar target/spring-auth-app-1.0.0.jar
 ```
 
-### 4. Access the application
-Open your browser and navigate to: `http://localhost:8080`
+### 4. Доступ к приложению
+Откройте браузер и перейдите по адресу: `http://localhost:8080`
 
-## Application URLs
+## URL адреса приложения
 
-- **Home Page**: `http://localhost:8080/`
-- **Login**: `http://localhost:8080/login`
-- **Register**: `http://localhost:8080/register`
-- **Dashboard**: `http://localhost:8080/dashboard` (requires authentication)
-- **Personal Profile**: `http://localhost:8080/personal` (requires authentication)
-- **Community Feed**: `http://localhost:8080/personal/feed` (requires authentication)
-- **User Profile**: `http://localhost:8080/personal/user/{username}` (requires authentication)
-- **H2 Database Console**: `http://localhost:8080/h2-console`
+- **Главная страница**: `http://localhost:8080/`
+- **Вход**: `http://localhost:8080/login`
+- **Регистрация**: `http://localhost:8080/register`
+- **Панель управления**: `http://localhost:8080/dashboard` (требует аутентификации)
+- **Личный профиль**: `http://localhost:8080/personal` (требует аутентификации)
+- **Лента сообщества**: `http://localhost:8080/personal/feed` (требует аутентификации)
+- **Профиль пользователя**: `http://localhost:8080/personal/user/{username}` (требует аутентификации)
+- **Консоль базы данных H2**: `http://localhost:8080/h2-console`
 
-### H2 Database Console Access
+### Доступ к консоли базы данных H2
 - **JDBC URL**: `jdbc:h2:mem:testdb`
-- **Username**: `sa`
-- **Password**: `password`
+- **Имя пользователя**: `sa`
+- **Пароль**: `password`
 
-## Usage
+## Использование
 
-### Registration & Login
-1. Navigate to the registration page
-2. Fill in the required fields:
-   - Username (3-50 characters, unique)
-   - Email (valid email format, unique)
-   - Password (minimum 6 characters)
-3. Submit the form
-4. Upon successful registration, you'll be redirected to the login page
-5. Login with your credentials
+### Регистрация и вход
+1. Перейдите на страницу регистрации
+2. Заполните обязательные поля:
+   - Имя пользователя (3-50 символов, уникальное)
+   - Email (корректный формат email, уникальный)
+   - Пароль (минимум 6 символов)
+3. Отправьте форму
+4. После успешной регистрации вы будете перенаправлены на страницу входа
+5. Войдите, используя свои учетные данные
 
-### Personal Profile Management
-1. After login, navigate to "My Profile"
-2. **Update Status**: Change your current status (up to 200 characters)
-3. **Create Posts**: Share your thoughts with the community (up to 1000 characters)
-4. **Manage Posts**: View, edit, or delete your posts
-5. **Profile Stats**: View your post count and account information
+### Управление личным профилем
+1. После входа перейдите в "Мой профиль"
+2. **Обновить статус**: Измените свой текущий статус (до 200 символов)
+3. **Создать посты**: Поделитесь своими мыслями с сообществом (до 1000 символов)
+4. **Управление постами**: Просматривайте, редактируйте или удаляйте свои посты
+5. **Статистика профиля**: Просматривайте количество постов и информацию об аккаунте
 
-### Community Interaction
-1. **Community Feed**: View all posts from all users
-2. **User Profiles**: Click on usernames to view their profiles
-3. **Pagination**: Navigate through multiple pages of posts
-4. **Real-time Updates**: Posts appear in chronological order
+### Взаимодействие с сообществом
+1. **Лента сообщества**: Просматривайте все посты всех пользователей
+2. **Профили пользователей**: Нажимайте на имена пользователей для просмотра их профилей
+3. **Пагинация**: Переходите между несколькими страницами постов
+4. **Обновления в реальном времени**: Посты отображаются в хронологическом порядке
 
-### Dashboard
-- View account status and personal statistics
-- Quick access to profile and feed
-- Access to H2 database console for development
+### Панель управления
+- Просмотр статуса аккаунта и персональной статистики
+- Быстрый доступ к профилю и ленте
+- Доступ к консоли базы данных H2 для разработки
 
-## Project Structure
+## Структура проекта
 
 ```
 src/
 ├── main/
 │   ├── java/com/example/
-│   │   ├── SpringAuthApplication.java          # Main application class
+│   │   ├── SpringAuthApplication.java          # Главный класс приложения
 │   │   ├── config/
-│   │   │   └── SecurityConfig.java             # Spring Security configuration
+│   │   │   └── SecurityConfig.java             # Конфигурация Spring Security
 │   │   ├── controller/
-│   │   │   ├── AuthController.java             # Authentication controller
-│   │   │   └── PersonalController.java         # Personal page & posts controller
+│   │   │   ├── AuthController.java             # Контроллер аутентификации
+│   │   │   └── PersonalController.java         # Контроллер личных страниц и постов
 │   │   ├── model/
-│   │   │   ├── User.java                       # User entity with status
-│   │   │   └── Post.java                       # Post entity
+│   │   │   ├── User.java                       # Сущность пользователя со статусом
+│   │   │   └── Post.java                       # Сущность поста
 │   │   ├── repository/
-│   │   │   ├── UserRepository.java             # User repository
-│   │   │   └── PostRepository.java             # Post repository
+│   │   │   ├── UserRepository.java             # Репозиторий пользователей
+│   │   │   └── PostRepository.java             # Репозиторий постов
 │   │   ├── security/
-│   │   │   └── CustomUserDetailsService.java  # Custom UserDetailsService
+│   │   │   └── CustomUserDetailsService.java  # Пользовательский UserDetailsService
 │   │   └── service/
-│   │       ├── UserService.java                # User service layer
-│   │       └── PostService.java               # Post service layer
+│   │       ├── UserService.java                # Сервисный слой пользователей
+│   │       └── PostService.java               # Сервисный слой постов
 │   └── resources/
-│       ├── application.properties              # Application configuration
-│       └── templates/                          # Thymeleaf templates
-│           ├── index.html                      # Home page
-│           ├── login.html                      # Login page
-│           ├── register.html                   # Registration page
-│           ├── dashboard.html                  # User dashboard
-│           ├── personal.html                   # Personal profile page
-│           ├── feed.html                       # Community feed
-│           ├── user-profile.html               # Other user profiles
-│           └── layout.html                     # Base layout template
-└── pom.xml                                     # Maven dependencies
+│       ├── application.properties              # Конфигурация приложения
+│       └── templates/                          # Шаблоны Thymeleaf
+│           ├── index.html                      # Главная страница
+│           ├── login.html                      # Страница входа
+│           ├── register.html                   # Страница регистрации
+│           ├── dashboard.html                  # Панель пользователя
+│           ├── personal.html                   # Страница личного профиля
+│           ├── feed.html                       # Лента сообщества
+│           ├── user-profile.html               # Профили других пользователей
+│           └── layout.html                     # Базовый шаблон
+└── pom.xml                                     # Maven зависимости
 ```
 
 ## API Endpoints
 
-### Authentication
-- `GET /` - Home page
-- `GET /login` - Login page
-- `POST /login` - Process login
-- `GET /register` - Registration page
-- `POST /register` - Process registration
-- `POST /logout` - Logout user
+### Аутентификация
+- `GET /` - Главная страница
+- `GET /login` - Страница входа
+- `POST /login` - Обработка входа
+- `GET /register` - Страница регистрации
+- `POST /register` - Обработка регистрации
+- `POST /logout` - Выход пользователя
 
-### Personal Features (Authenticated)
-- `GET /dashboard` - User dashboard
-- `GET /personal` - Personal profile page
-- `POST /personal/status` - Update user status
-- `POST /personal/post` - Create new post
-- `POST /personal/post/{id}/delete` - Delete post
-- `GET /personal/feed` - Community feed with pagination
-- `GET /personal/user/{username}` - View user profile
+### Личные функции (Аутентифицированные)
+- `GET /dashboard` - Панель пользователя
+- `GET /personal` - Страница личного профиля
+- `POST /personal/status` - Обновление статуса пользователя
+- `POST /personal/post` - Создание нового поста
+- `POST /personal/post/{id}/delete` - Удаление поста
+- `GET /personal/feed` - Лента сообщества с пагинацией
+- `GET /personal/user/{username}` - Просмотр профиля пользователя
 
-## Database Schema
+## Схема базы данных
 
-### Users Table
-- `id` (Primary Key)
-- `username` (Unique)
-- `email` (Unique)
-- `password` (Encrypted)
-- `enabled` (Boolean)
-- `status` (User status text)
+### Таблица Users
+- `id` (Первичный ключ)
+- `username` (Уникальный)
+- `email` (Уникальный)
+- `password` (Зашифрованный)
+- `enabled` (Логический)
+- `status` (Текст статуса пользователя)
 
-### Posts Table
-- `id` (Primary Key)
-- `content` (Post content)
-- `created_at` (Timestamp)
-- `author_id` (Foreign Key to Users)
+### Таблица Posts
+- `id` (Первичный ключ)
+- `content` (Содержимое поста)
+- `created_at` (Временная метка)
+- `author_id` (Внешний ключ к Users)
 
-## Security Features
+## Функции безопасности
 
-- **BCrypt Password Encoding**: All passwords are encrypted using BCrypt
-- **CSRF Protection**: Cross-Site Request Forgery protection enabled
-- **Session Management**: Secure session handling
-- **Input Validation**: Server-side validation with Bean Validation
-- **SQL Injection Prevention**: JPA repository pattern prevents SQL injection
-- **Authorization**: Role-based access control for protected endpoints
+- **Кодирование паролей BCrypt**: Все пароли шифруются с использованием BCrypt
+- **Защита от CSRF**: Включена защита от межсайтовой подделки запросов
+- **Управление сессиями**: Безопасная обработка сессий
+- **Валидация входных данных**: Валидация на стороне сервера с Bean Validation
+- **Предотвращение SQL инъекций**: Паттерн JPA репозитория предотвращает SQL инъекции
+- **Авторизация**: Контроль доступа на основе ролей для защищенных endpoints
 
-## Customization
+## Настройка
 
-### Database Configuration
-To use a different database, modify `application.properties`:
+### Конфигурация базы данных
+Для использования другой базы данных измените `application.properties`:
 ```properties
-# For MySQL
+# Для MySQL
 spring.datasource.url=jdbc:mysql://localhost:3306/your_database
 spring.datasource.username=your_username
 spring.datasource.password=your_password
@@ -209,80 +209,80 @@ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
 ```
 
-### UI Customization
-- Modify CSS in the `<style>` sections of HTML templates
-- Update Bootstrap version in template files
-- Change color scheme by updating CSS custom properties
-- Customize post display limits and pagination settings
+### Настройка UI
+- Изменяйте CSS в секциях `<style>` HTML шаблонов
+- Обновляйте версию Bootstrap в файлах шаблонов
+- Изменяйте цветовую схему, обновляя пользовательские свойства CSS
+- Настраивайте лимиты отображения постов и настройки пагинации
 
-### Feature Extensions
-- Add user avatars and image uploads
-- Implement like/comment system for posts
-- Add user following/followers functionality
-- Implement real-time notifications
-- Add post categories and tags
+### Расширения функциональности
+- Добавьте аватары пользователей и загрузку изображений
+- Реализуйте систему лайков/комментариев для постов
+- Добавьте функциональность подписки/подписчиков пользователей
+- Реализуйте уведомления в реальном времени
+- Добавьте категории постов и теги
 
-## Development
+## Разработка
 
-### Running in Development Mode
+### Запуск в режиме разработки
 ```bash
 mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-### Building for Production
+### Сборка для продакшена
 ```bash
 mvn clean package -Pproduction
 ```
 
-### Testing
+### Тестирование
 ```bash
 mvn test
 ```
 
-## Troubleshooting
+## Устранение неполадок
 
-### Common Issues
+### Распространенные проблемы
 
-1. **Port 8080 already in use**
-   - Change the port in `application.properties`: `server.port=8081`
+1. **Порт 8080 уже используется**
+   - Измените порт в `application.properties`: `server.port=8081`
 
-2. **Database connection issues**
-   - Check H2 console settings
-   - Verify database URL and credentials
+2. **Проблемы с подключением к базе данных**
+   - Проверьте настройки консоли H2
+   - Убедитесь в правильности URL базы данных и учетных данных
 
-3. **Authentication not working**
-   - Clear browser cache and cookies
-   - Check if user exists in the database
+3. **Аутентификация не работает**
+   - Очистите кэш браузера и cookies
+   - Проверьте, существует ли пользователь в базе данных
 
-4. **Posts not displaying**
-   - Check if user is properly authenticated
-   - Verify database contains post data
+4. **Посты не отображаются**
+   - Проверьте, правильно ли аутентифицирован пользователь
+   - Убедитесь, что база данных содержит данные постов
 
-5. **Status updates not saving**
-   - Ensure status is under 200 characters
-   - Check for validation errors in browser console
+5. **Обновления статуса не сохраняются**
+   - Убедитесь, что статус содержит менее 200 символов
+   - Проверьте ошибки валидации в консоли браузера
 
-## Contributing
+## Участие в разработке
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+1. Сделайте fork репозитория
+2. Создайте ветку для новой функции
+3. Внесите изменения
+4. Добавьте тесты, если применимо
+5. Отправьте pull request
 
-## Future Enhancements
+## Будущие улучшения
 
-- **File Uploads**: User avatars and post images
-- **Real-time Features**: WebSocket support for live updates
-- **Advanced Search**: Search posts and users
-- **Mobile App**: React Native or Flutter mobile application
-- **API Documentation**: Swagger/OpenAPI documentation
-- **Performance Optimization**: Caching and query optimization
+- **Загрузка файлов**: Аватары пользователей и изображения постов
+- **Функции реального времени**: Поддержка WebSocket для обновлений в реальном времени
+- **Расширенный поиск**: Поиск постов и пользователей
+- **Мобильное приложение**: Мобильное приложение на React Native или Flutter
+- **Документация API**: Документация Swagger/OpenAPI
+- **Оптимизация производительности**: Кэширование и оптимизация запросов
 
-## License
+## Лицензия
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+Этот проект лицензирован под лицензией MIT - см. файл LICENSE для подробностей.
 
-## Support
+## Поддержка
 
-For questions or issues, please open an issue in the repository or contact the development team. 
+По вопросам или проблемам, пожалуйста, создайте issue в репозитории или свяжитесь с командой разработки. 

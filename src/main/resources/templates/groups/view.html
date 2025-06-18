@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${group.name} + ' - Group Chat'">Group Chat - Spring Auth App</title>
+    <title th:text="${group.name} + ' - Чат группы'">Чат группы - Socium</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link th:href="@{/css/styles.css}" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #d4b5ff 0%, #b794f6 100%);
             min-height: 100vh;
         }
         .chat-container {
@@ -32,7 +32,7 @@
             word-wrap: break-word;
         }
         .message.own {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #4a5c96, #5c4a7a);
             color: white;
             margin-left: auto;
             text-align: right;
@@ -79,7 +79,7 @@
             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
         }
         .btn-primary {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #4a5c96, #5c4a7a);
             border: none;
             border-radius: 50%;
             width: 50px;
@@ -104,7 +104,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #4a5c96, #5c4a7a);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -136,7 +136,7 @@
             width: 35px;
             height: 35px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #4a5c96, #5c4a7a);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -162,7 +162,7 @@
             margin-top: 5px;
         }
         .group-header {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #4a5c96, #5c4a7a);
             color: white;
             border-radius: 15px;
             padding: 20px;
@@ -183,32 +183,32 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h2>
-                        <i class="fas fa-users"></i> <span th:text="${group.name}">Group Name</span>
+                        <i class="fas fa-users"></i> <span th:text="${group.name}">Название группы</span>
                         <span th:if="${group.public}" class="badge bg-success ms-2">
-                            <i class="fas fa-globe"></i> Public
+                            <i class="fas fa-globe"></i> Публичная
                         </span>
                         <span th:if="${!group.public}" class="badge bg-secondary ms-2">
-                            <i class="fas fa-lock"></i> Private
+                            <i class="fas fa-lock"></i> Приватная
                         </span>
                     </h2>
-                    <p class="mb-0" th:text="${group.description}">Group description</p>
+                    <p class="mb-0" th:text="${group.description}">Описание группы</p>
                 </div>
                 <div class="text-end">
                     <div class="mb-2">
                         <span class="badge bg-light text-dark">
-                            <i class="fas fa-user-friends"></i> <span th:text="${group.memberCount}">0</span> members
+                            <i class="fas fa-user-friends"></i> <span th:text="${group.memberCount}">0</span> участников
                         </span>
                     </div>
                     <div class="btn-group">
                         <a th:href="@{/groups/{id}/settings(id=${group.id})}" 
                            th:if="${isAdmin}" class="btn btn-light btn-sm">
-                            <i class="fas fa-cog"></i> Settings
+                            <i class="fas fa-cog"></i> Настройки
                         </a>
                         <form th:action="@{/groups/{id}/leave(id=${group.id})}" method="post" class="d-inline">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <button type="submit" class="btn btn-outline-light btn-sm"
-                                    onclick="return confirm('Are you sure you want to leave this group?')">
-                                <i class="fas fa-sign-out-alt"></i> Leave
+                                    onclick="return confirm('Вы уверены, что хотите покинуть эту группу?')">
+                                <i class="fas fa-sign-out-alt"></i> Покинуть
                             </button>
                         </form>
                     </div>
@@ -224,8 +224,8 @@
                     <div class="messages-container" id="messagesContainer">
                         <div th:if="${messages.content.empty}" class="text-center py-5">
                             <i class="fas fa-comments fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No messages yet</h5>
-                            <p class="text-muted">Be the first to start the conversation!</p>
+                            <h5 class="text-muted">Пока нет сообщений</h5>
+                            <p class="text-muted">Станьте первым, кто начнет разговор!</p>
                         </div>
 
                         <div th:each="message : ${messages.content}" 
@@ -233,8 +233,8 @@
                             
                             <!-- System Message -->
                             <div th:if="${message.systemMessage}">
-                                <div class="message-content" th:text="${message.content}">System message</div>
-                                <div class="message-time" th:text="${#temporals.format(message.createdAt, 'MMM dd, HH:mm')}">Time</div>
+                                <div class="message-content" th:text="${message.content}">Системное сообщение</div>
+                                <div class="message-time" th:text="${#temporals.format(message.createdAt, 'MMM dd, HH:mm')}">Время</div>
                             </div>
 
                             <!-- Regular Message -->
@@ -243,10 +243,10 @@
                                 <div class="message-avatar me-3" th:unless="${currentUser != null and message.sender.id == currentUser.id}">
                                     <div class="avatar-circle">
                                         <span th:if="${message.sender.avatarUrl == null or message.sender.avatarUrl.isEmpty()}" 
-                                              th:text="${message.sender.username.substring(0,1).toUpperCase()}">A</span>
+                                              th:text="${message.sender.username.substring(0,1).toUpperCase()}">А</span>
                                         <img th:if="${message.sender.avatarUrl != null and !message.sender.avatarUrl.isEmpty()}" 
                                              th:src="${message.sender.avatarUrl}" 
-                                             th:alt="|${message.sender.username} avatar|" 
+                                             th:alt="|${message.sender.username} аватар|" 
                                              class="avatar-img"
                                              onerror="this.style.display='none'; this.parentElement.innerHTML='<span>' + this.getAttribute('alt').charAt(0).toUpperCase() + '</span>';">
                                     </div>
@@ -255,21 +255,21 @@
                                 <!-- Message Content -->
                                 <div class="flex-grow-1">
                                     <div class="message-header" th:unless="${currentUser != null and message.sender.id == currentUser.id}">
-                                        <strong th:text="${message.sender.username}">Username</strong>
+                                        <strong th:text="${message.sender.username}">Имя пользователя</strong>
                                         <span class="message-time ms-2">
-                                            <span th:text="${#temporals.format(message.createdAt, 'MMM dd, HH:mm')}">Time</span>
+                                            <span th:text="${#temporals.format(message.createdAt, 'MMM dd, HH:mm')}">Время</span>
                                         </span>
                                     </div>
-                                    <div class="message-content" th:text="${message.content}">Message content</div>
+                                    <div class="message-content" th:text="${message.content}">Содержимое сообщения</div>
                                     <div class="message-time" th:if="${currentUser != null and message.sender.id == currentUser.id}">
-                                        <span th:text="${#temporals.format(message.createdAt, 'MMM dd, HH:mm')}">Time</span>
+                                        <span th:text="${#temporals.format(message.createdAt, 'MMM dd, HH:mm')}">Время</span>
                                         <span th:if="${message.edited}" class="ms-2">
-                                            <i class="fas fa-edit" title="Edited"></i>
+                                            <i class="fas fa-edit" title="Изменено"></i>
                                         </span>
                                     </div>
                                     <div th:if="${message.edited and !(currentUser != null and message.sender.id == currentUser.id)}" class="message-edited">
                                         <small class="text-muted">
-                                            <i class="fas fa-edit" title="Edited"></i> edited
+                                            <i class="fas fa-edit" title="Изменено"></i> изменено
                                         </small>
                                     </div>
                                 </div>
@@ -283,7 +283,7 @@
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <div class="input-group">
                                 <input type="text" class="form-control" name="content" 
-                                       placeholder="Type your message..." required maxlength="1000"
+                                       placeholder="Введите ваше сообщение..." required maxlength="1000"
                                        autocomplete="off">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-paper-plane"></i>
@@ -295,10 +295,10 @@
 
                 <!-- Pagination -->
                 <div th:if="${totalPages > 1}" class="mt-3">
-                    <nav aria-label="Messages pagination">
+                    <nav aria-label="Пагинация сообщений">
                         <ul class="pagination justify-content-center">
                             <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
-                                <a class="page-link" th:href="@{/groups/{id}(id=${group.id}, page=${currentPage - 1})}">Previous</a>
+                                <a class="page-link" th:href="@{/groups/{id}(id=${group.id}, page=${currentPage - 1})}">Предыдущая</a>
                             </li>
                             <li class="page-item" 
                                 th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
@@ -306,7 +306,7 @@
                                 <a class="page-link" th:href="@{/groups/{id}(id=${group.id}, page=${i})}" th:text="${i + 1}">1</a>
                             </li>
                             <li class="page-item" th:classappend="${currentPage >= totalPages - 1 ? 'disabled' : ''}">
-                                <a class="page-link" th:href="@{/groups/{id}(id=${group.id}, page=${currentPage + 1})}">Next</a>
+                                <a class="page-link" th:href="@{/groups/{id}(id=${group.id}, page=${currentPage + 1})}">Следующая</a>
                             </li>
                         </ul>
                     </nav>
@@ -318,7 +318,7 @@
                 <div class="members-sidebar">
                     <div class="p-3 bg-light border-bottom">
                         <h5 class="mb-0">
-                            <i class="fas fa-users text-primary"></i> Members
+                            <i class="fas fa-users text-primary"></i> Участники
                             <span class="badge bg-primary ms-2" th:text="${members.size()}">0</span>
                         </h5>
                     </div>
@@ -326,27 +326,27 @@
                     <div th:each="member : ${members}" class="member-item">
                         <div class="member-avatar">
                             <span th:if="${member.user.avatarUrl == null or member.user.avatarUrl.isEmpty()}" 
-                                  th:text="${member.user.username.substring(0,1).toUpperCase()}">A</span>
+                                  th:text="${member.user.username.substring(0,1).toUpperCase()}">А</span>
                             <img th:if="${member.user.avatarUrl != null and !member.user.avatarUrl.isEmpty()}" 
                                  th:src="${member.user.avatarUrl}" 
-                                 th:alt="|${member.user.username} avatar|" 
+                                 th:alt="|${member.user.username} аватар|" 
                                  class="member-avatar-img"
                                  onerror="this.style.display='none'; this.parentElement.innerHTML='<span>' + this.getAttribute('alt').charAt(0).toUpperCase() + '</span>';">
                         </div>
                         <div class="member-info">
-                            <div class="member-name" th:text="${member.user.username}">Username</div>
+                            <div class="member-name" th:text="${member.user.username}">Имя пользователя</div>
                             <div class="member-role">
                                 <span th:if="${member.role.name() == 'ADMIN'}" class="text-danger">
-                                    <i class="fas fa-crown"></i> Admin
+                                    <i class="fas fa-crown"></i> Администратор
                                 </span>
                                 <span th:if="${member.role.name() == 'MODERATOR'}" class="text-warning">
-                                    <i class="fas fa-shield-alt"></i> Moderator
+                                    <i class="fas fa-shield-alt"></i> Модератор
                                 </span>
                                 <span th:if="${member.role.name() == 'MEMBER'}" class="text-muted">
-                                    <i class="fas fa-user"></i> Member
+                                    <i class="fas fa-user"></i> Участник
                                 </span>
                                 <small class="text-muted d-block">
-                                    Joined <span th:text="${#temporals.format(member.joinedAt, 'MMM dd')}">Date</span>
+                                    Присоединился <span th:text="${#temporals.format(member.joinedAt, 'MMM dd')}">Дата</span>
                                 </small>
                             </div>
                         </div>

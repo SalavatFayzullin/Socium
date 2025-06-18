@@ -12,6 +12,7 @@
 
 # Package Files #
 *.jar
+!.mvn/wrapper/maven-wrapper.jar
 *.war
 *.nar
 *.ear
@@ -33,7 +34,7 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
+# Note: .mvn/wrapper/maven-wrapper.jar should be committed to the repository
 
 # Gradle
 .gradle

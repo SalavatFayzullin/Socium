@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Groups - Spring Auth App</title>
+    <title>Мои группы - Socium</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link th:href="@{/css/styles.css}" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #d4b5ff 0%, #b794f6 100%);
             min-height: 100vh;
         }
         .card {
@@ -25,17 +25,17 @@
             margin-bottom: 20px;
         }
         .group-header {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #4a5c96, #5c4a7a);
             color: white;
             border-radius: 15px 15px 0 0;
             padding: 20px;
         }
         .btn-primary {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #4a5c96, #5c4a7a);
             border: none;
         }
         .btn-primary:hover {
-            background: linear-gradient(45deg, #764ba2, #667eea);
+            background: linear-gradient(45deg, #5c4a7a, #4a5c96);
         }
     </style>
 </head>
@@ -51,33 +51,33 @@
             <div class="col-12">
                 <div class="card">
                     <div class="group-header">
-                        <h2><i class="fas fa-users"></i> My Groups</h2>
-                        <p class="mb-0">Groups you're a member of</p>
+                        <h2><i class="fas fa-users"></i> Мои группы</h2>
+                        <p class="mb-0">Группы, участником которых вы являетесь</p>
                     </div>
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h5 class="mb-0">
-                                Total Groups: <span class="badge bg-primary" th:text="${groups.totalElements}">0</span>
+                                Всего групп: <span class="badge bg-primary" th:text="${groups.totalElements}">0</span>
                             </h5>
                             <div>
                                 <a href="/groups/create" class="btn btn-primary">
-                                    <i class="fas fa-plus"></i> Create Group
+                                    <i class="fas fa-plus"></i> Создать группу
                                 </a>
                                 <a href="/groups/discover" class="btn btn-outline-primary">
-                                    <i class="fas fa-search"></i> Discover Groups
+                                    <i class="fas fa-search"></i> Найти группы
                                 </a>
                             </div>
                         </div>
 
                         <div th:if="${groups.content.empty}" class="text-center py-5">
                             <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                            <h4 class="text-muted">No Groups Yet</h4>
-                            <p class="text-muted">You haven't joined any groups. Create one or discover public groups!</p>
+                            <h4 class="text-muted">Пока нет групп</h4>
+                            <p class="text-muted">Вы еще не присоединились ни к одной группе. Создайте свою или найдите публичные группы!</p>
                             <a href="/groups/create" class="btn btn-primary me-2">
-                                <i class="fas fa-plus"></i> Create Your First Group
+                                <i class="fas fa-plus"></i> Создать вашу первую группу
                             </a>
                             <a href="/groups/discover" class="btn btn-outline-primary">
-                                <i class="fas fa-search"></i> Discover Groups
+                                <i class="fas fa-search"></i> Найти группы
                             </a>
                         </div>
 
@@ -87,42 +87,42 @@
                                     <div class="card-body">
                                         <h5 class="card-title">
                                             <i class="fas fa-users text-primary"></i>
-                                            <span th:text="${group.name}">Group Name</span>
+                                            <span th:text="${group.name}">Название группы</span>
                                             <span th:if="${group.public}" class="badge bg-success ms-2">
-                                                <i class="fas fa-globe"></i> Public
+                                                <i class="fas fa-globe"></i> Публичная
                                             </span>
                                             <span th:if="${!group.public}" class="badge bg-secondary ms-2">
-                                                <i class="fas fa-lock"></i> Private
+                                                <i class="fas fa-lock"></i> Приватная
                                             </span>
                                         </h5>
-                                        <p class="card-text text-muted" th:text="${group.description}">Group description</p>
+                                        <p class="card-text text-muted" th:text="${group.description}">Описание группы</p>
                                         
                                         <div class="mb-3">
                                             <small class="text-muted">
                                                 <i class="fas fa-user-friends"></i> 
-                                                <span th:text="${group.memberCount}">0</span> members
+                                                <span th:text="${group.memberCount}">0</span> участников
                                             </small>
                                             <small class="text-muted ms-3">
                                                 <i class="fas fa-clock"></i> 
-                                                Last activity: <span th:text="${#temporals.format(group.lastActivityAt, 'MMM dd, yyyy')}">Date</span>
+                                                Последняя активность: <span th:text="${#temporals.format(group.lastActivityAt, 'MMM dd, yyyy')}">Дата</span>
                                             </small>
                                         </div>
 
                                         <div class="d-grid gap-2">
                                             <a th:href="@{/groups/{id}(id=${group.id})}" class="btn btn-primary">
-                                                <i class="fas fa-comments"></i> Open Chat
+                                                <i class="fas fa-comments"></i> Открыть чат
                                             </a>
                                             <div class="btn-group" role="group">
                                                 <a th:href="@{/groups/{id}/settings(id=${group.id})}" 
                                                    th:if="${currentUser != null and (group.createdBy.id == currentUser.id or group.isUserAdmin(currentUser))}"
                                                    class="btn btn-outline-secondary btn-sm">
-                                                    <i class="fas fa-cog"></i> Settings
+                                                    <i class="fas fa-cog"></i> Настройки
                                                 </a>
                                                 <form th:action="@{/groups/{id}/leave(id=${group.id})}" method="post" class="d-inline">
                                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                                     <button type="submit" class="btn btn-outline-danger btn-sm"
-                                                            onclick="return confirm('Are you sure you want to leave this group?')">
-                                                        <i class="fas fa-sign-out-alt"></i> Leave
+                                                            onclick="return confirm('Вы уверены, что хотите покинуть эту группу?')">
+                                                        <i class="fas fa-sign-out-alt"></i> Покинуть
                                                     </button>
                                                 </form>
                                             </div>
@@ -134,10 +134,10 @@
 
                         <!-- Pagination -->
                         <div th:if="${totalPages > 1}" class="d-flex justify-content-center mt-4">
-                            <nav aria-label="Groups pagination">
+                            <nav aria-label="Пагинация групп">
                                 <ul class="pagination">
                                     <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
-                                        <a class="page-link" th:href="@{/groups(page=${currentPage - 1})}">Previous</a>
+                                        <a class="page-link" th:href="@{/groups(page=${currentPage - 1})}">Предыдущая</a>
                                     </li>
                                     <li class="page-item" 
                                         th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
@@ -145,7 +145,7 @@
                                         <a class="page-link" th:href="@{/groups(page=${i})}" th:text="${i + 1}">1</a>
                                     </li>
                                     <li class="page-item" th:classappend="${currentPage >= totalPages - 1 ? 'disabled' : ''}">
-                                        <a class="page-link" th:href="@{/groups(page=${currentPage + 1})}">Next</a>
+                                        <a class="page-link" th:href="@{/groups(page=${currentPage + 1})}">Следующая</a>
                                     </li>
                                 </ul>
                             </nav>

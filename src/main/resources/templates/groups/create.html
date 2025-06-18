@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Group - Spring Auth App</title>
+    <title>Создать группу - Socium</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link th:href="@{/css/styles.css}" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #d4b5ff 0%, #b794f6 100%);
             min-height: 100vh;
         }
         .card {
@@ -27,13 +27,13 @@
             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
         }
         .btn-primary {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #4a5c96, #5c4a7a);
             border: none;
             border-radius: 10px;
             padding: 12px 30px;
         }
         .btn-primary:hover {
-            background: linear-gradient(45deg, #764ba2, #667eea);
+            background: linear-gradient(45deg, #5c4a7a, #4a5c96);
             transform: translateY(-2px);
         }
         .btn-secondary {
@@ -41,7 +41,7 @@
             padding: 12px 30px;
         }
         .group-header {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #4a5c96, #5c4a7a);
             color: white;
             border-radius: 15px 15px 0 0;
             padding: 30px;
@@ -62,8 +62,8 @@
                 <div class="card">
                     <div class="group-header">
                         <i class="fas fa-plus-circle fa-3x mb-3"></i>
-                        <h2>Create New Group</h2>
-                        <p class="mb-0">Start a new community and invite others to join</p>
+                        <h2>Создать новую группу</h2>
+                        <p class="mb-0">Начните новое сообщество и пригласите других присоединиться</p>
                     </div>
                     <div class="card-body p-4">
                         <form action="/groups/create" method="post">

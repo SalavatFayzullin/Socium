@@ -3,7 +3,7 @@
 
 /* Global background + typography */
 body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #dde0ff 0%, #c7d2ff 100%);
     min-height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -52,7 +52,7 @@ body {
 
 /* Buttons */
 .btn-primary {
-    background: linear-gradient(45deg, #667eea, #764ba2);
+    background: linear-gradient(45deg, #4a5c96, #5c4a7a);
     border: none;
     border-radius: 25px;
     padding: 10px 30px;
