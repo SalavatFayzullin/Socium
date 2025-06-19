@@ -1,0 +1,54 @@
+# Исключаем ненужные файлы и директории из Docker контекста
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Maven
+target/
+*.jar
+*.war
+*.ear
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Временные файлы
+*.tmp
+*.temp
+
+# Документация
+README.md
+*.md
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Данные приложения
+data/
+uploads/
+*.db
+*.sqlite
+
+# Node modules (если используется)
+node_modules/
+
+# Прочие файлы разработки
+.env
+.env.local
+.env.*.local 

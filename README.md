@@ -6,11 +6,23 @@ Socium - это полнофункциональная социальная пл
 
 ## Быстрый старт
 
+### С помощью Docker (рекомендуется)
+
 ```bash
 # Клонировать репозиторий
 git clone <repository-url>
 cd Socium
 
+# Запустить с Docker Compose
+docker-compose up -d
+
+# Открыть в браузере
+http://localhost:8080
+```
+
+### Локальная разработка
+
+```bash
 # Запустить приложение
 ./mvnw spring-boot:run
 

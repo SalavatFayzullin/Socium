@@ -105,3 +105,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log* 
 uploads/
+
+# Docker
+# Note: Docker files should be committed to the repository
